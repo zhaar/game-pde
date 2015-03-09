@@ -4,8 +4,11 @@ void setup() {
 }
  
 float xAxis = 1;
-
-
+boolean mouseDragged = false;
+float rz;
+float rx;
+float wheelDirection = 0;
+int wheelVelocity = 1;
 
 void draw() {
   camera(width/2.0, height / 2.0, height/2.0 / tan(radians(30)), width/2.0, height/2.0, 0, 0, -1, 0);
@@ -13,8 +16,21 @@ void draw() {
   ambientLight(102, 102, 102);
   background(200);
   translate(width/2, height/2);
-  float rz = map(mouseY, 0, height, -60, 60.0);
-  float rx = map(mouseX, 0, width, -60, 60.0);
+  if(wheelDirection > 0) {
+    if(wheelVelocity < 5) {
+      wheelVelocity++;
+    }
+  } else if(wheelDirection < 0) {
+    if(wheelVelocity > 1) {
+      wheelVelocity--;
+    }
+  }
+  wheelDirection = 0;
+  if(mouseDragged){
+    rz = wheelVelocity*map(mouseY, 0, height, -60, 60.0);
+    rx = wheelVelocity*map(mouseX, 0, width, -60, 60.0);
+  }
+  limitAngle();
   rotateZ(radians(rz));
   rotateX(radians(rx));
   rotateY(xAxis);
@@ -28,6 +44,31 @@ void keyPressed() {
     } else if (keyCode == RIGHT) {
       xAxis -= 50;
     }
+  }
+}
+
+void mousePressed() {
+  mouseDragged = true;
+}
+
+void mouseReleased() {
+  mouseDragged = false;
+}
+
+void mouseWheel(MouseEvent event) {
+  wheelDirection = event.getCount();
+}
+
+void limitAngle() {
+  if(rz < -60) {
+    rz = -60;
+  } else if (rz > 60) {
+    rz = 60;
+  }
+  if (rx < -60) {
+    rx = -60;
+  } else if (rx > 60) {
+    rx = 60;
   }
 }
 
