@@ -17,6 +17,7 @@ void setup() {
   noStroke();
   ball = new Ball(SPHERE_RADIUS);
 }
+Sphere s = new Sphere(20, 5);
 
 void draw() {
   camera(width/2.0, height / 2.0, height/2.0 / tan(radians(30)), width/2.0, height/2.0, 0, 0, -1, 0);
@@ -48,9 +49,70 @@ void draw() {
   ball.draw();
 }
 
-void keyPressed() { 
+class Sphere{
+  PVector position;
+  PVector velocity;
+  PVector friction;
+  final float radius;
+  final float y;
+  Sphere(float radius, float y){
+    position = new PVector(width/2, height/2);
+    velocity = new PVector(0,0);
+    friction = new PVector(0,0);
+    this.radius = radius;
+    this.y = y;
+  }
+
+  void update(){
+    updateSpeed();
+    checkEdges();
+    updateFriction();
+    position.add(velocity);
+    position.add(friction);
+  }
+
+  void draw(){
+    translate(position.x,y + radius, position.y);
+    sphere(radius);
+    translate(-position.x,-y - radius,-position.y);
+  }
+
+  private void updateSpeed(){
+//    gravityForce.x = sin(rz) * gravityConstant;
+//    gravityForce.z = sin(rx) * gravityConstant;
+    println("updating speed to");
+    velocity.set(sin(rz) * gravityConstant, sin(rx) * gravityConstant);
+  }
+
+  private void updateFriction(){
+    float normalForce = 1;
+    float mu = 0.01;
+    float frictionMagnitude = normalForce * mu;
+    friction = velocity.get();
+    friction.mult(-1);
+    friction.normalize();
+    friction.mult(frictionMagnitude);
+  }
+
+  private void checkEdges(){
+      if (position.x > width){
+        velocity.x = -velocity.x;
+      }
+      else if (position.x < 0) {
+        velocity.x = -velocity.x;
+      }
+      if (position.y > height) {
+        velocity.y = -velocity.y;
+      }
+      else if (position.y < 0) {
+        velocity.y = -velocity.y;
+      }
+  }
+}
+
+void keyPressed() {
   if (key == CODED) {
-    if (keyCode == LEFT) { 
+    if (keyCode == LEFT) {
       xAxis += 50;
     } else if (keyCode == RIGHT) {
       xAxis -= 50;
@@ -82,4 +144,3 @@ void limitAngle() {
     rx = 60;
   }
 }
-
