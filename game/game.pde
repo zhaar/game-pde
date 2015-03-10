@@ -27,8 +27,8 @@ void draw() {
   }
   wheelDirection = 0;
   if(mouseDragged){
-    rz = wheelVelocity*map(mouseY, 0, height, -60, 60.0);
-    rx = wheelVelocity*map(mouseX, 0, width, -60, 60.0);
+    rz = wheelVelocity*map(mouseX, 0, height, -60, 60.0);
+    rx = wheelVelocity*map(mouseY, 0, width, -60, 60.0);
   }
   limitAngle();
   rotateZ(radians(rz));
