@@ -2,7 +2,7 @@ void setup() {
   size(500, 500, P3D);
   noStroke();
 }
- 
+
 float xAxis = 1;
 boolean mouseDragged = false;
 float rz;
@@ -16,19 +16,19 @@ void draw() {
   ambientLight(102, 102, 102);
   background(200);
   translate(width/2, height/2);
-  if(wheelDirection > 0) {
-    if(wheelVelocity < 5) {
+  if (wheelDirection > 0) {
+    if (wheelVelocity < 5) {
       wheelVelocity++;
     }
-  } else if(wheelDirection < 0) {
-    if(wheelVelocity > 1) {
+  } else if (wheelDirection < 0) {
+    if (wheelVelocity > 1) {
       wheelVelocity--;
     }
   }
   wheelDirection = 0;
-  if(mouseDragged){
-    rz = wheelVelocity*map(mouseX, 0, height, -60, 60.0);
-    rx = wheelVelocity*map(mouseY, 0, width, -60, 60.0);
+  if (mouseDragged) {
+    rx += (wheelVelocity/2.0)*(mouseY-pmouseY);
+    rz += (wheelVelocity/2.0)*(mouseX-pmouseX);
   }
   limitAngle();
   rotateZ(radians(rz));
@@ -60,7 +60,7 @@ void mouseWheel(MouseEvent event) {
 }
 
 void limitAngle() {
-  if(rz < -60) {
+  if (rz < -60) {
     rz = -60;
   } else if (rz > 60) {
     rz = 60;
