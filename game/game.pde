@@ -1,14 +1,22 @@
-void setup() {
-  size(500, 500, P3D);
-  noStroke();
-}
-
 float xAxis = 1;
 boolean mouseDragged = false;
 float rz;
 float rx;
 float wheelDirection = 0;
 int wheelVelocity = 1;
+float normalForce = 1;
+float mu = 0.02;
+float frictionMagnitude = normalForce * mu;
+final static int SPHERE_RADIUS = 20;
+final static int BOX_DIMENSIONS = 400;
+final static float gravityConstant = 0.1;
+Ball ball;
+
+void setup() {
+  size(800, 800, P3D);
+  noStroke();
+  ball = new Ball(SPHERE_RADIUS);
+}
 
 void draw() {
   camera(width/2.0, height / 2.0, height/2.0 / tan(radians(30)), width/2.0, height/2.0, 0, 0, -1, 0);
@@ -33,8 +41,11 @@ void draw() {
   limitAngle();
   rotateZ(radians(rz));
   rotateX(radians(rx));
-  rotateY(xAxis);
-  box(400, 5, 400);
+  //rotateY(xAxis);
+  box(BOX_DIMENSIONS, 5, BOX_DIMENSIONS);
+
+  ball.update();
+  ball.draw();
 }
 
 void keyPressed() { 
