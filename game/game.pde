@@ -17,7 +17,6 @@ void setup() {
   noStroke();
   ball = new Ball(SPHERE_RADIUS);
 }
-Sphere s = new Sphere(20, 5);
 
 void draw() {
   camera(width/2.0, height / 2.0, height/2.0 / tan(radians(30)), width/2.0, height/2.0, 0, 0, -1, 0);
