@@ -2,9 +2,16 @@ class Cylinder {
   float cylinderBaseSize = 50;
   float cylinderHeight = 50;
   int cylinderResolution = 40;
+  int X;
+  int Y;
 
   PShape openCylinder = new PShape();
 
+  Cylinder(int X, int Y) {
+    this.X = X;
+    this.Y = Y;
+    this.create();
+  }
 
   void create() {
     float angle;
@@ -17,9 +24,11 @@ class Cylinder {
       x[i] = sin(angle) * cylinderBaseSize;
       y[i] = cos(angle) * cylinderBaseSize;
     }
+    stroke(0);
+    noFill();
 
     openCylinder = createShape(GROUP);
-    
+
     PShape side = createShape();
     side.beginShape(QUAD_STRIP);
     //draw the border of the cylinder
@@ -28,7 +37,7 @@ class Cylinder {
       side.vertex(x[i], y[i], cylinderHeight);
     }
     side.endShape();
-    
+
     PShape bottom = createShape();
     bottom.beginShape(TRIANGLE_FAN);
     bottom.vertex(0, 0, 0);
@@ -36,7 +45,7 @@ class Cylinder {
       bottom.vertex(x[i], y[i], 0);
     }
     bottom.endShape();
-    
+
     PShape top = createShape();
     top.beginShape(TRIANGLE_FAN);
     top.vertex(0, 0, cylinderHeight);
@@ -44,17 +53,21 @@ class Cylinder {
       top.vertex(x[i], y[i], cylinderHeight);
     }
     top.endShape();
-    
+
     openCylinder.addChild(side);
     openCylinder.addChild(top);
     openCylinder.addChild(bottom);
+    noStroke();
+    fill(255);
   }
 
 
   void draw() {
-    translate(mouseX, mouseY, 0);
+    translate(X, 0, Y);
+    rotateX(-PI/2);
     shape(openCylinder);
-    translate(-mouseX, -mouseY, 0);
+    rotateX(PI/2);
+    translate(-X, 0, -Y);
   }
 }
 

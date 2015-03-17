@@ -1,5 +1,6 @@
 float xAxis = 1;
 boolean mouseDragged = false;
+boolean shiftMode = false;
 float rz;
 float rx;
 float wheelDirection = 0;
@@ -11,13 +12,12 @@ final static int SPHERE_RADIUS = 20;
 final static int BOX_DIMENSIONS = 400;
 final static float gravityConstant = 0.1;
 Ball ball;
-Cylinder cylinder = new Cylinder();
+ArrayList<Cylinder> cylinders = new ArrayList<Cylinder>();
 
 void setup() {
   size(800, 800, P3D);
   noStroke();
   ball = new Ball(SPHERE_RADIUS);
-  cylinder.create();
 }
 
 void draw() {
@@ -26,30 +26,40 @@ void draw() {
   ambientLight(102, 102, 102);
   background(200);
 
-  translate(width/2, height/2);
-  if (wheelDirection > 0) {
-    if (wheelVelocity < 5) {
-      wheelVelocity++;
+  if (!shiftMode) {
+    translate(width/2, height/2);
+    if (wheelDirection > 0) {
+      if (wheelVelocity < 5) {
+        wheelVelocity++;
+      }
+    } else if (wheelDirection < 0) {
+      if (wheelVelocity > 1) {
+        wheelVelocity--;
+      }
     }
-  } else if (wheelDirection < 0) {
-    if (wheelVelocity > 1) {
-      wheelVelocity--;
+    wheelDirection = 0;
+    if (mouseDragged) {
+      rx += (wheelVelocity/2.0)*(mouseY-pmouseY);
+      rz += (wheelVelocity/2.0)*(mouseX-pmouseX);
     }
+    limitAngle();
+    rotateZ(radians(rz));
+    rotateX(radians(rx));
+    //rotateY(xAxis);
+    ball.update();
+  } else {
+    directionalLight(25, 50, 65, 0, 0, -1);
+    translate(width/2, height/2);
+    rotateX(PI/2);
   }
-  wheelDirection = 0;
-  if (mouseDragged) {
-    rx += (wheelVelocity/2.0)*(mouseY-pmouseY);
-    rz += (wheelVelocity/2.0)*(mouseX-pmouseX);
-  }
-  limitAngle();
-  rotateZ(radians(rz));
-  rotateX(radians(rx));
-  //rotateY(xAxis);
+
+
   box(BOX_DIMENSIONS, 5, BOX_DIMENSIONS);
 
-  cylinder.draw();
-  
-  ball.update();
+  for (Cylinder cylinder : cylinders) {
+    cylinder.draw();
+  }
+
   ball.draw();
 }
 
@@ -59,16 +69,35 @@ void keyPressed() {
       xAxis += 50;
     } else if (keyCode == RIGHT) {
       xAxis -= 50;
+    } else if (keyCode == SHIFT) {
+      shiftMode = true;
+    }
+  }
+}
+
+void keyReleased() {
+  if (key == CODED) {
+    if (keyCode == SHIFT) {
+      shiftMode = false;
     }
   }
 }
 
 void mousePressed() {
-  mouseDragged = true;
+  if (!shiftMode) {
+    mouseDragged = true;
+  } else {
+    int X = mouseX - width/2;
+    int Y = mouseY - height/2;
+    if (X <= BOX_DIMENSIONS/2 && X >= -BOX_DIMENSIONS/2 && Y <= BOX_DIMENSIONS/2 && Y >= -BOX_DIMENSIONS/2)
+      cylinders.add(new Cylinder(-X, Y));
+  }
 }
 
 void mouseReleased() {
-  mouseDragged = false;
+  if (!shiftMode) {
+    mouseDragged = false;
+  }
 }
 
 void mouseWheel(MouseEvent event) {
