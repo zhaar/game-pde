@@ -11,11 +11,13 @@ final static int SPHERE_RADIUS = 20;
 final static int BOX_DIMENSIONS = 400;
 final static float gravityConstant = 0.1;
 Ball ball;
+Cylinder cylinder = new Cylinder();
 
 void setup() {
   size(800, 800, P3D);
   noStroke();
   ball = new Ball(SPHERE_RADIUS);
+  cylinder.create();
 }
 
 void draw() {
@@ -23,6 +25,7 @@ void draw() {
   directionalLight(50, 100, 125, 0.5, -0.5, 0);
   ambientLight(102, 102, 102);
   background(200);
+
   translate(width/2, height/2);
   if (wheelDirection > 0) {
     if (wheelVelocity < 5) {
@@ -44,6 +47,8 @@ void draw() {
   //rotateY(xAxis);
   box(BOX_DIMENSIONS, 5, BOX_DIMENSIONS);
 
+  cylinder.draw();
+  
   ball.update();
   ball.draw();
 }
@@ -82,3 +87,4 @@ void limitAngle() {
     rx = 60;
   }
 }
+
