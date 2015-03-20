@@ -53,7 +53,6 @@ void draw() {
     rotateX(PI/2);
   }
 
-
   box(BOX_DIMENSIONS, 5, BOX_DIMENSIONS);
 
   for (Cylinder cylinder : cylinders) {
