@@ -17,6 +17,7 @@ abstract class Mover {
     vel.add(gravityForce);
     
     checkBounds();
+    checkCylinderCollision();
     
     pos.add(vel);
   }

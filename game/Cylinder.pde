@@ -3,13 +3,13 @@ class Cylinder {
   float cylinderHeight = 50;
   int cylinderResolution = 40;
   int X;
-  int Y;
+  int Z;
 
   PShape openCylinder = new PShape();
 
-  Cylinder(int X, int Y) {
+  Cylinder(int X, int Z) {
     this.X = X;
-    this.Y = Y;
+    this.Z = Z;
     this.create();
   }
 
@@ -61,13 +61,12 @@ class Cylinder {
     fill(255);
   }
 
-
   void draw() {
-    translate(X, 0, Y);
+    translate(X, 0, Z);
     rotateX(-PI/2);
     shape(openCylinder);
     rotateX(PI/2);
-    translate(-X, 0, -Y);
+    translate(-X, 0, -Z);
   }
 }
 
