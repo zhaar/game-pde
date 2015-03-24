@@ -13,11 +13,13 @@ final static int BOX_DIMENSIONS = 400;
 final static float gravityConstant = 0.1;
 Ball ball;
 ArrayList<Cylinder> cylinders = new ArrayList<Cylinder>();
+Surface surface;
 
 void setup() {
-  size(800, 800, P3D);
+  size(700, 700, P3D);
   noStroke();
   ball = new Ball(SPHERE_RADIUS);
+  surface = new Surface();
 }
 
 void draw() {
@@ -25,7 +27,8 @@ void draw() {
   directionalLight(50, 100, 125, 0.5, -0.5, 0);
   ambientLight(102, 102, 102);
   background(200);
-
+  surface.draw();
+  
   if (!shiftMode) {
     translate(width/2, height/2);
     if (wheelDirection > 0) {
@@ -58,7 +61,7 @@ void draw() {
   for (Cylinder cylinder : cylinders) {
     cylinder.draw();
   }
-
+  
   ball.draw();
 }
 
