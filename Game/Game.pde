@@ -92,7 +92,7 @@ void mousePressed() {
     int X = mouseX - width/2;
     int Y = mouseY - height/2;
     if (X <= BOX_DIMENSIONS/2 && X >= -BOX_DIMENSIONS/2 && Y <= BOX_DIMENSIONS/2 && Y >= -BOX_DIMENSIONS/2)
-      cylinders.add(new Cylinder(-X, Y));
+      cylinders.add(new StupidTree(-X, Y)); //change type of object added here
   }
 }
 

@@ -1,0 +1,21 @@
+# Blender MTL File: 'stupidTree.blend'
+# Material Count: 2
+
+newmtl Leaf
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.005830 0.415143 0.001331
+Ks 0.002891 0.321053 0.009127
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd LeafColor.png
+
+newmtl Wood
+Ns 113.725490
+Ka 0.000000 0.000000 0.000000
+Kd 0.327730 0.067366 0.009437
+Ks 0.384374 0.045973 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
