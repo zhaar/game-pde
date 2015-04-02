@@ -13,21 +13,27 @@ final static int BOX_DIMENSIONS = 400;
 final static float gravityConstant = 0.1;
 Ball ball;
 ArrayList<Cylinder> cylinders = new ArrayList<Cylinder>();
-Surface surface;
+Surface bottomSurf;
+Minimap topView;
 
 void setup() {
   size(700, 700, P3D);
   noStroke();
   ball = new Ball(SPHERE_RADIUS);
-  surface = new Surface();
+  bottomSurf = new Surface(width, 150);
+  topView = new Minimap(140, 140);
 }
 
 void draw() {
+  background(200);
   camera(width/2.0, height / 2.0, height/2.0 / tan(radians(30)), width/2.0, height/2.0, 0, 0, -1, 0);
+  bottomSurf.draw(0, 0, 165);
+  topView.draw(width-145, 4, 100);
+  for (Cylinder cylinder : cylinders) {
+    topView.draw(cylinder.X, cylinder.Z);
+  }
   directionalLight(50, 100, 125, 0.5, -0.5, 0);
   ambientLight(102, 102, 102);
-  background(200);
-  surface.draw();
   
   if (!shiftMode) {
     translate(width/2, height/2);

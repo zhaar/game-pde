@@ -1,21 +1,19 @@
 class Surface {
-  PGraphics bottomRect;
+  PGraphics surface;
   
-  Surface() {
-    bottomRect = createGraphics(width, 100, P2D);
+  Surface(int w, int h) {
+    surface = createGraphics(w, h, P2D);
   }
   
-  void drawSurface() {
-    bottomRect.beginDraw();
-    bottomRect.fill(0);
-    //bottomRect.background(255, 255, 255);
-    bottomRect.rect(0, 0, 700, 100);
-    bottomRect.endDraw();
+  void drawSurface(int rgb) {
+    surface.beginDraw();
+    surface.background(rgb);
+    surface.endDraw();
   }
 
-  void draw() {
-    drawSurface();
-    image(bottomRect, 0, 0);
+  void draw(int x, int y, int rgb) {
+    drawSurface(rgb);
+    image(surface, x, y);
   }
 }
 
