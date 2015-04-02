@@ -7,6 +7,8 @@ class Cylinder {
 
   PShape openCylinder = new PShape();
 
+  Cylinder() {}
+
   Cylinder(int X, int Z) {
     this.X = X;
     this.Z = Z;
