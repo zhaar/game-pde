@@ -2,7 +2,7 @@ package UI;
 
 import processing.core.PApplet;
 
-class HScrollbar extends PApplet{
+class HScrollbar{
     float barWidth;  //Bar's width in pixels
     float barHeight; //Bar's height in pixels
     float xPosition;  //Bar's x position in pixels
@@ -13,6 +13,7 @@ class HScrollbar extends PApplet{
 
     boolean mouseOver;  //Is the mouse over the slider?
     boolean locked;     //Is the mouse clicking and dragging the slider now?
+    private final PApplet ctx;
 
     /**
      * @brief Creates a new horizontal scrollbar
@@ -22,7 +23,8 @@ class HScrollbar extends PApplet{
      * @param w The width of the bar in pixels
      * @param h The height of the bar in pixels
      */
-    HScrollbar (float x, float y, float w, float h) {
+    HScrollbar (PApplet context, float x, float y, float w, float h) {
+        this.ctx = context;
         barWidth = w;
         barHeight = h;
         xPosition = x;
@@ -45,16 +47,16 @@ class HScrollbar extends PApplet{
         else {
             mouseOver = false;
         }
-        if (mousePressed && mouseOver) {
+        if (ctx.mousePressed && mouseOver) {
             locked = true;
         }
-        if (!mousePressed) {
+        if (!ctx.mousePressed) {
             locked = false;
         }
         if (locked) {
-            newSliderPosition = constrain(mouseX - barHeight/2, sliderPositionMin, sliderPositionMax);
+            newSliderPosition = clamp(ctx.mouseX - barHeight / 2, sliderPositionMin, sliderPositionMax);
         }
-        if (abs(newSliderPosition - sliderPosition) > 1) {
+        if (ctx.abs(newSliderPosition - sliderPosition) > 1) {
             sliderPosition = sliderPosition + (newSliderPosition - sliderPosition);
         }
     }
@@ -69,7 +71,7 @@ class HScrollbar extends PApplet{
      * @return val clamped into the interval [minVal, maxVal]
      */
     float clamp(float val, float minVal, float maxVal) {
-        return min(max(val, minVal), maxVal);
+        return ctx.min(ctx.max(val, minVal), maxVal);
     }
 
     /**
@@ -78,8 +80,8 @@ class HScrollbar extends PApplet{
      * @return Whether the mouse is hovering the scrollbar
      */
     boolean isMouseOver() {
-        if (mouseX > xPosition && mouseX < xPosition+barWidth &&
-                mouseY > yPosition && mouseY < yPosition+barHeight) {
+        if (ctx.mouseX > xPosition && ctx.mouseX < xPosition+barWidth &&
+                ctx.mouseY > yPosition && ctx.mouseY < yPosition+barHeight) {
             return true;
         }
         else {
@@ -91,16 +93,16 @@ class HScrollbar extends PApplet{
      * @brief Draws the scrollbar in its current state
      */
     void display() {
-        noStroke();
-        fill(204);
-        rect(xPosition, yPosition, barWidth, barHeight);
+        ctx.noStroke();
+        ctx.fill(204);
+        ctx.rect(xPosition, yPosition, barWidth, barHeight);
         if (mouseOver || locked) {
-            fill(0, 0, 0);
+            ctx.fill(0, 0, 0);
         }
         else {
-            fill(102, 102, 102);
+            ctx.fill(102, 102, 102);
         }
-        rect(sliderPosition, yPosition, barHeight, barHeight);
+        ctx.rect(sliderPosition, yPosition, barHeight, barHeight);
     }
 
     /**
