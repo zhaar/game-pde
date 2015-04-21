@@ -43,27 +43,51 @@ public class ThresholdFilter {
         return applyFilter(ctx.createImage(source.width, source.height, ctx.RGB));
     }
 
-    public static ThresholdFunction binaryThreshold(int threshold) {
-        return pixelValue ->  pixelValue < threshold ? 0 : 255 ;
+    public static ThresholdFunction binaryThreshold(final int threshold) {
+        return new ThresholdFunction() {
+            @Override
+            public int apply(int pixelValue) {
+                return pixelValue < threshold ? 0 : 255 ;
+            }
+        };
     }
 
-    public static ThresholdFunction invertedBinaryThreshold(int threshold) {
-        return pixelValue -> pixelValue > threshold ? 0 : 255;
+    public static ThresholdFunction invertedBinaryThreshold(final int threshold) {
+        return new ThresholdFunction() {
+            @Override
+            public int apply(int pixelValue) {
+                return pixelValue > threshold ? 0 : 255;
+            }
+        };
     }
 
-    public static ThresholdFunction truncateThreshold(int threshold) {
-        return pixelValue -> Math.min(threshold, pixelValue);
+    public static ThresholdFunction truncateThreshold(final int threshold) {
+        return new ThresholdFunction() {
+            @Override
+            public int apply(int pixelValue) {
+                return Math.min(threshold, pixelValue);
+            }
+        };
     }
 
-    public static ThresholdFunction toZeroThreshold(int threshold) {
-        return pixelValue -> pixelValue > threshold ? pixelValue : 0;
+    public static ThresholdFunction toZeroThreshold(final int threshold) {
+        return new ThresholdFunction() {
+            @Override
+            public int apply(int pixelValue) {
+                return pixelValue > threshold ? pixelValue : 0;
+            }
+        };
     }
 
-    public static ThresholdFunction invertedToZeroThreshold(int threshold) {
-        return pixelValue -> pixelValue < threshold ? pixelValue : 0;
+    public static ThresholdFunction invertedToZeroThreshold(final int threshold) {
+        return new ThresholdFunction() {
+            @Override
+            public int apply(int pixelValue) {
+                return pixelValue < threshold ? pixelValue : 0;
+            }
+        };
     }
 
-    @FunctionalInterface
     public interface ThresholdFunction {
         int apply(int pixelValue);
     }

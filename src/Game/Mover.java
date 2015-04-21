@@ -4,7 +4,7 @@ import processing.core.*;
 
 public abstract class Mover {
   int radius;
-  PVector pos;
+  PVector pos = new PVector(0, 0, 0);;
   PVector vel = new PVector(0, 0, 0);
   PVector friction;
   PVector gravityForce = new PVector(0, 0, 0);
