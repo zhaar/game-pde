@@ -2,7 +2,7 @@ package UI;
 
 import processing.core.PApplet;
 
-class HScrollbar{
+public class HScrollbar{
     float barWidth;  //Bar's width in pixels
     float barHeight; //Bar's height in pixels
     float xPosition;  //Bar's x position in pixels
@@ -23,7 +23,7 @@ class HScrollbar{
      * @param w The width of the bar in pixels
      * @param h The height of the bar in pixels
      */
-    HScrollbar (PApplet context, float x, float y, float w, float h) {
+    public HScrollbar (PApplet context, float x, float y, float w, float h) {
         this.ctx = context;
         barWidth = w;
         barHeight = h;
@@ -40,7 +40,7 @@ class HScrollbar{
     /**
      * @brief Updates the state of the scrollbar according to the mouse movement
      */
-    void update() {
+    public void update() {
         if (isMouseOver()) {
             mouseOver = true;
         }
@@ -92,7 +92,7 @@ class HScrollbar{
     /**
      * @brief Draws the scrollbar in its current state
      */
-    void display() {
+    public void display() {
         ctx.noStroke();
         ctx.fill(204);
         ctx.rect(xPosition, yPosition, barWidth, barHeight);
@@ -110,7 +110,7 @@ class HScrollbar{
      *
      * @return The slider position in the interval [0,1] corresponding to [leftmost position, rightmost position]
      */
-    float getPos() {
+    public float getPos() {
         return (sliderPosition - xPosition)/(barWidth - barHeight);
     }
 }
