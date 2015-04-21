@@ -1,11 +1,15 @@
+package Game;
+
+import processing.core.*;
+
 class Minimap extends Surface {
   float ratio;
   PGraphics circle;
   
-  Minimap(int w, int h) {
-    super(w, h);
-    ratio = BOX_DIMENSIONS/(float)w;
-    circle = createGraphics(50, 50, P2D);
+  Minimap(PApplet context, int w, int h) {
+    super(context, w, h);
+    ratio = Game.BOX_DIMENSIONS/(float)w;
+    circle = ctx.createGraphics(50, 50, ctx.P2D);
   }
   
   void drawCylinders(int x, int z) {
@@ -22,6 +26,6 @@ class Minimap extends Surface {
   
   void draw(int x, int y) {
     drawCircle(x, y);
-    image(circle, x, y);
+    ctx.image(circle, x, y);
   }
 }

@@ -1,14 +1,18 @@
-abstract class Mover {
+package Game;
+
+import processing.core.*;
+
+public abstract class Mover {
   int radius;
   PVector pos;
   PVector vel = new PVector(0, 0, 0);
   PVector friction;
   PVector gravityForce = new PVector(0, 0, 0);
-  float coef = 0.6;
-  
-  void update() {
-    gravityForce.x = sin(-radians(rz)) * gravityConstant;
-    gravityForce.z = sin(radians(rx)) * gravityConstant;
+  float coef = 0.6f;
+
+  void update(float frictionMagnitude, float rx, float rz) {
+    gravityForce.x = PApplet.sin(-PApplet.radians(rz)) * Game.gravityConstant;
+    gravityForce.z = PApplet.sin(PApplet.radians(rx)) * Game.gravityConstant;
     friction = vel.get();
     friction.mult(-1);
     friction.normalize();

@@ -1,4 +1,8 @@
-class Cylinder {
+package Game;
+
+import processing.core.*;
+
+public class Cylinder {
   float cylinderBaseSize = 50;
   float cylinderHeight = 50;
   int cylinderResolution = 40;
@@ -7,9 +11,10 @@ class Cylinder {
 
   PShape openCylinder = new PShape();
 
-  Cylinder() {}
+  protected final PApplet ctx;
 
-  Cylinder(int X, int Z) {
+  public Cylinder(PApplet context, int X, int Z) {
+    this.ctx = context;
     this.X = X;
     this.Z = Z;
     this.create();
@@ -22,17 +27,17 @@ class Cylinder {
 
     //get the x and y position on a circle for all the sides
     for (int i = 0; i < x.length; i++) {
-      angle = (TWO_PI / cylinderResolution) * i;
-      x[i] = sin(angle) * cylinderBaseSize;
-      y[i] = cos(angle) * cylinderBaseSize;
+      angle = (PApplet.TWO_PI / cylinderResolution) * i;
+      x[i] = PApplet.sin(angle) * cylinderBaseSize;
+      y[i] = PApplet.cos(angle) * cylinderBaseSize;
     }
-    stroke(0);
-    noFill();
+    ctx.stroke(0);
+    ctx.noFill();
 
-    openCylinder = createShape(GROUP);
+    openCylinder = ctx.createShape(PApplet.GROUP);
 
-    PShape side = createShape();
-    side.beginShape(QUAD_STRIP);
+    PShape side = ctx.createShape();
+    side.beginShape(PApplet.QUAD_STRIP);
     //draw the border of the cylinder
     for (int i = 0; i < x.length; i++) {
       side.vertex(x[i], y[i], 0);
@@ -40,16 +45,16 @@ class Cylinder {
     }
     side.endShape();
 
-    PShape bottom = createShape();
-    bottom.beginShape(TRIANGLE_FAN);
+    PShape bottom = ctx.createShape();
+    bottom.beginShape(PApplet.TRIANGLE_FAN);
     bottom.vertex(0, 0, 0);
     for (int i = 0; i < x.length; i++) {
       bottom.vertex(x[i], y[i], 0);
     }
     bottom.endShape();
 
-    PShape top = createShape();
-    top.beginShape(TRIANGLE_FAN);
+    PShape top = ctx.createShape();
+    top.beginShape(PApplet.TRIANGLE_FAN);
     top.vertex(0, 0, cylinderHeight);
     for (int i = 0; i < x.length; i++) {
       top.vertex(x[i], y[i], cylinderHeight);
@@ -59,16 +64,16 @@ class Cylinder {
     openCylinder.addChild(side);
     openCylinder.addChild(top);
     openCylinder.addChild(bottom);
-    noStroke();
-    fill(255);
+    ctx.noStroke();
+    ctx.fill(255);
   }
 
   void draw() {
-    translate(X, 0, Z);
-    rotateX(-PI/2);
-    shape(openCylinder);
-    rotateX(PI/2);
-    translate(-X, 0, -Z);
+    ctx.translate(X, 0, Z);
+    ctx.rotateX(-PApplet.PI / 2);
+    ctx.shape(openCylinder);
+    ctx.rotateX(PApplet.PI / 2);
+    ctx.translate(-X, 0, -Z);
   }
 }
 
