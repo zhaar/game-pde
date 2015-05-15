@@ -26,7 +26,7 @@ public class ImageConvolution {
 				g_intensity /= weight;
 				b_intensity /= weight;
 				
-				result.pixels[y * img.width + x] = pApplet.color(r_intensity, g_intensity, b_intensity);
+				result.pixels[y * img.width + x] = pApplet.color((r_intensity + g_intensity + b_intensity) / 3.f);//pApplet.color(r_intensity, g_intensity, b_intensity);
 			}
 		}
 		return result;
@@ -44,11 +44,27 @@ public class ImageConvolution {
 		float[] buffer = new float[img.width * img.height];
 		
 		PImage vImage = convolute(img, vKernel, pApplet);
+		PImage hImage = convolute(img, hKernel, pApplet);
+		
+		float distance = 0;
+		for(int i = 0; i < img.width; i++){
+			for(int j = 0; j < img.height; j++){
+				int a = vImage.pixels[j * img.width + i];
+				int b = hImage.pixels[j * img.width + i];
+				
+				distance = (float) Math.sqrt(Math.pow(pApplet.red(a) + pApplet.green(a) + pApplet.blue(a), 2)
+						+ Math.pow(pApplet.red(b) + pApplet.green(b) + pApplet.blue(b), 2));
+				
+				buffer[j * img.width + i] = distance;
+				if(distance > max){
+					max = distance;
+				}
+			}
+		}
 		
 		for (int y = 2; y < img.height - 2; y++) { // Skip top and bottom edges
 			for (int x = 2; x < img.width - 2; x++) { // Skip left and right
 				if (buffer[y * img.width + x] > (int) (max * 0.3f)) { 
-
 					result.pixels[y * img.width + x] = pApplet.color(255);
 				} else {
 					result.pixels[y * img.width + x] = pApplet.color(0);
@@ -57,4 +73,5 @@ public class ImageConvolution {
 		}
 		return result;
 	}
+	
 }

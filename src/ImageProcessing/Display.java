@@ -16,7 +16,7 @@ public class Display extends PApplet {
         float[][] kernel = { { 0, 1, 0 },
 			        		{ 0, 0, 0 },
 			        		{ 0, -1, 0 }};
-        image(ImageConvolution.convolute(img, kernel, this), 0, 0);
+        image(ImageConvolution.sobel(img, this), 0, 0);
     }
 }
 
