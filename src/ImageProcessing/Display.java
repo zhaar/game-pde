@@ -5,6 +5,7 @@ import processing.core.PImage;
 
 public class Display extends PApplet {
     PImage img;
+
     public void setup() {
         size(800, 600);
         img = loadImage("board1.jpg");
@@ -12,11 +13,10 @@ public class Display extends PApplet {
     }
 
     public void draw() {
-        //image(img, 0, 0);
-        float[][] kernel = { { 0, 1, 0 },
-			        		{ 0, 0, 0 },
-			        		{ 0, -1, 0 }};
+         image(img, 0, 0);
+        float[][] kernel = {{ 0, 1, 0 },
+                            { 0, 0, 0 },
+                            { 0, -1, 0 }};
         image(ImageConvolution.sobel(img, this), 0, 0);
     }
 }
-

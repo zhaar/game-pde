@@ -9,3 +9,8 @@ application.macosx
 *.iml
 .idea
 out
+
+/.settings/org.eclipse.jdt.core.prefs
+/.project
+/core.jar
+/.classpath
