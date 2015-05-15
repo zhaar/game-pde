@@ -12,7 +12,11 @@ public class Display extends PApplet {
     }
 
     public void draw() {
-        image(img, 0, 0);
+        //image(img, 0, 0);
+        float[][] kernel = { { 0, 1, 0 },
+			        		{ 0, 0, 0 },
+			        		{ 0, -1, 0 }};
+        image(ImageConvolution.convolute(img, kernel, this), 0, 0);
     }
 }
 
