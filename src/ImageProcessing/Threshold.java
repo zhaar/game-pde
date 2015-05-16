@@ -11,11 +11,11 @@ public class Threshold extends PApplet {
     private HScrollbar scrollbar;
     private PImage result;
     private ThresholdFilter filter;
+    PImage source = loadImage("board1.jpg");
 
     public void setup() {
         size(800, 600);
         scrollbar = new HScrollbar(this, 0, 580, 800, 20);
-        PImage source = loadImage("board1.jpg");
         filter = new ThresholdFilter(this, ThresholdFilter.binaryThreshold(128), source);
         result = filter.applyFilter();
     }
@@ -24,7 +24,8 @@ public class Threshold extends PApplet {
         background(color(0, 0, 0));
 
         result = filter.updateThresholdFunction(ThresholdFilter.binaryThreshold((int) (scrollbar.getPos() * 255)));
-        image(result, 0, 0);
+        image(source, 0, 0);
+        image(result, source.width, 0);
         scrollbar.display();
         scrollbar.update();
     }
