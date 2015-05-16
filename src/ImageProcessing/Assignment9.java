@@ -21,12 +21,13 @@ public class Assignment9 extends PApplet {
         h = new Hough(phiStep, rStep);
         acc = h.computeAccumulator(this, sobel);
         hough = Hough.drawAccumulator(this, acc, h.rDim(sobel), h.phiDim());
+        hough.resize(600,600);
         noLoop();
     }
 
     public void draw() {
-        image(img, 0, 0);
+        image(sobel, 0, 0);
         image(hough, img.width, 0);
-//        Hough.drawLinesFromAccumulator(this, acc, sobel.width, h.rDim(sobel), phiStep, rStep);
+        Hough.drawLinesFromAccumulator(this, acc, sobel.width, h.rDim(sobel), phiStep, rStep);
     }
 }

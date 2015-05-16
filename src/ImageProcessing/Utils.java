@@ -19,6 +19,7 @@ public class Utils {
     }
 
     public static boolean goesThrough(int x, int y, int r, int phi) {
+//        System.out.println("testing value " + x + ", " + y + " with line r:" + r + ", phi:" + phi);
         return r == x * Math.cos(phi) + y * Math.sin(phi);
     }
 

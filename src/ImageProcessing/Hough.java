@@ -22,30 +22,55 @@ public class Hough {
         int height = source.height;
         int phiDim = phiDim();
         int rDim = rDim(source);
+        int halfR = rDim / 2;
         int[] accumulator = new int[(phiDim + 2) * (rDim + 2)];
 
+        double[] sinTable = new double[phiDim];
+        double[] cosTable = new double[phiDim];
+        //juicy performances
+        for (int theta = phiDim - 1; theta >= 0; theta--)
+        {
+            double thetaRadians = theta * Math.PI / phiDim;
+            sinTable[theta] = Math.sin(thetaRadians);
+            cosTable[theta] = Math.cos(thetaRadians);
+        }
+
+        ctx.println("rDim: " + rDim);
+        ctx.println("phiDim: " + phiDim);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (ctx.brightness(source.pixels[y * width + x]) != 0) {
-                    for (int phi = 0; phi < phiDim; ++phi) {
-                        for (int r = 0; r < rDim; ++r) {
-                            if (goesThrough(x,y,r/rDim,phi/phiDim)) {
-                                accumulator[phi * phiDim + r]++;
-                            }
-                        }
+                    for (int theta = phiDim - 1; theta >= 0; theta--){
+                        double r = cosTable[theta] * x + sinTable[theta] * y;
+                        int rScaled = (int)Math.round(r * halfR / rDim) + halfR;
+                        accumulator[theta * phiDim + rScaled]++;
                     }
+
+//                    for (int phi = 0; phi < phiDim; ++phi) {
+//                        for (int r = 0; r < rDim; ++r) {
+//                            if (goesThrough(x,y,r,phi)) {
+//                                accumulator[phi * phiDim + r]++;
+//                            }
+//                        }
+//                    }
                     // ...determine here all the lines (r, phi) passing through
                     // pixel (x,y), convert (r,phi) to coordinates in the
                     // accumulator, and increment accordingly the accumulator.
                 }
             }
         }
+//        for (int phi = 0; phi < phiDim; ++phi) {
+//            for (int r = 0; r < rDim; ++r) {
+//                ctx.print(accumulator[phi * phiDim + r] + " ");
+//            }
+//            ctx.println("\n");
+//        }
 
         return accumulator;
     }
 
     public int phiDim() {
-        return (int) (Math.PI / phiStep);
+        return (int) (2* Math.PI / phiStep);
     }
 
     public int rDim(PImage img) {
@@ -66,6 +91,7 @@ public class Hough {
         int size = acc.length;
         for (int i = 0; i < size; ++i) {
             if (acc[i] > ACCUMULATOR_THRESHOLD) {
+
                 int accPhi = (int) (i / (rDim + 2)) - 1;
                 int accR = i - (accPhi + 1) * (rDim + 2) - 1;
                 float r = (accR - (rDim - 1) * 0.5f) * rStep;
