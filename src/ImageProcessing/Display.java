@@ -4,6 +4,7 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 public class Display extends PApplet {
+
     PImage img;
 
     public void setup() {
@@ -14,6 +15,6 @@ public class Display extends PApplet {
 
     public void draw() {
         image(img, 0, 0);
-        image(ImageConvolution.sobel(img, this), 0, 0);
+//        image(ImageConvolution.sobel(img, this), 0, 0);
     }
 }

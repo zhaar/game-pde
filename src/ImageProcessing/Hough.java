@@ -61,8 +61,8 @@ public class Hough {
         return houghImg;
     }
 
-    private static void drawLinesFromAccumulator(PApplet ctx, int[] acc, int width, int height,
-                                                 int rDim, int phiStep, int rStep) {
+    public static void drawLinesFromAccumulator(PApplet ctx, int[] acc, int width,
+                                                 int rDim, float phiStep, float rStep) {
         int size = acc.length;
         for (int i = 0; i < size; ++i) {
             if (acc[i] > ACCUMULATOR_THRESHOLD) {
