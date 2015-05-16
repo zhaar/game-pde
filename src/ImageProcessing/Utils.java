@@ -18,9 +18,8 @@ public class Utils {
         public S _2() { return s; }
     }
 
-    public static Pair<Double, Double> cartesianToPolar(double x, double y) {
-        double phi = Math.atan(y / x);
-        return new Pair<>(x * Math.cos(phi) + y * Math.sin(phi), phi);
+    public static boolean goesThrough(int x, int y, int r, int phi) {
+        return r == x * Math.cos(phi) + y * Math.sin(phi);
     }
 
     @FunctionalInterface
