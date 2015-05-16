@@ -22,11 +22,14 @@ public class Assignment9 extends PApplet {
         if (cameras.length == 0) {
             println("There are no cameras available for capture.");
             exit(); } else {
+            int goodCam = 0;
             println("Available cameras:");
             for (int i = 0; i < cameras.length; i++) {
                 println(cameras[i]);
+                if (cameras[i].contains("640x"))
+                    goodCam = i;
             }
-            cam = new Capture(this, cameras[3]);
+            cam = new Capture(this, cameras[goodCam]);
             cam.start();
         }
         img = loadImage("board1.jpg");
