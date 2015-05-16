@@ -3,6 +3,8 @@ package ImageProcessing;
 import processing.core.PApplet;
 import processing.core.PImage;
 
+import java.util.List;
+
 import static ImageProcessing.Utils.*;
 import static ImageProcessing.Utils.goesThrough;
 import static processing.core.PApplet.*;
@@ -25,6 +27,7 @@ public class Hough {
         int rMax = rDim(source);
 
         ArrayData acc = new ArrayData(phiMax + 2, rMax + 2);
+
         float[] sinTable = new float[phiMax];
         float[] cosTable = new float[phiMax];
         for(int angle = 0; angle < phiMax; ++angle) {
@@ -44,6 +47,35 @@ public class Hough {
             }
         }
         return acc;
+    }
+
+    public int[] computeAccumulator2(PApplet ctx, PImage source) {
+        int width = source.width;
+        int height = source.height;
+        int phiMax = phiDim();
+        int rMax = rDim(source);
+
+        int[] accumulator = new int[(phiMax + 2) * (rMax + 2)];
+        float[] sinTable = new float[phiMax];
+        float[] cosTable = new float[phiMax];
+        for(int angle = 0; angle < phiMax; ++angle) {
+            sinTable[angle] = sin(PI * angle/phiMax);
+            cosTable[angle] = cos(PI * angle/phiMax);
+        }
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (ctx.brightness(source.pixels[y * source.width + x]) != 0) {
+                    for (int angle = 0; angle < phiMax; ++angle) {
+                        float r = x * cosTable[angle] + y * sinTable[angle];
+                        int normalized = Math.round((r + rMax) / 2);
+//                        acc.accumulate(angle, normalized, 1);
+                        accumulator[angle * rMax + normalized] += 1;
+                    }
+                }
+            }
+        }
+        return accumulator;
     }
 
     public int phiDim() {
@@ -73,13 +105,12 @@ public class Hough {
         return houghImg;
     }
 
-    public static void drawLinesFromAccumulator(PApplet ctx, int[] acc, int width,
-                                                 int rDim, float phiStep, float rStep) {
+    public static void drawLinesFromAccumulator(PApplet ctx, int[] acc, int width, float phiStep, float rStep, int rDim) {
         int size = acc.length;
         for (int i = 0; i < size; ++i) {
             if (acc[i] > ACCUMULATOR_THRESHOLD) {
 
-                int accPhi = (int) (i / (rDim + 2)) - 1;
+                int accPhi = (i / (rDim + 2)) - 1;
                 int accR = i - (accPhi + 1) * (rDim + 2) - 1;
                 float r = (accR - (rDim - 1) * 0.5f) * rStep;
                 float phi = accPhi * phiStep;

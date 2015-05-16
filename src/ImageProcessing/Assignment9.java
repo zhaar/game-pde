@@ -10,24 +10,24 @@ public class Assignment9 extends PApplet {
 
     PImage hough;
     PImage sobel;
-    Utils.ArrayData acc;
+    int[] acc;
     Hough h;
     PImage img;
 
     public void setup() {
-        size(1600, 600);
+        size(800, 600);
         img = loadImage("board1.jpg");
         sobel = ImageConvolution.sobel(img, this);
         h = new Hough(phiStep, rStep);
-        acc = h.computeAccumulator(this, sobel);
-        hough = Hough.drawAccumulator(this, acc);
+        acc = h.computeAccumulator2(this, sobel);
+        hough = Hough.drawAccumulator(this, acc, h.rDim(sobel), h.phiDim());
         hough.resize(600,600);
         noLoop();
     }
 
     public void draw() {
         image(sobel, 0, 0);
-        image(hough, img.width, 0);
-        Hough.drawLinesFromAccumulator(this, acc.dataArray, sobel.width, h.rDim(sobel), phiStep, rStep);
+//        image(hough, img.width, 0);
+        Hough.drawLinesFromAccumulator(this, acc, sobel.width, phiStep, rStep, h.rDim(sobel));
     }
 }
