@@ -25,24 +25,24 @@ public class Hough {
         int rMax = rDim(source);
 
         ArrayData acc = new ArrayData(phiMax + 2, rMax + 2);
-        float minr = 0;
-        float maxr = 0;
+        float[] sinTable = new float[phiMax];
+        float[] cosTable = new float[phiMax];
+        for(int angle = 0; angle < phiMax; ++angle) {
+            sinTable[angle] = sin(PI * angle/phiMax);
+            cosTable[angle] = cos(PI * angle/phiMax);
+        }
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (ctx.brightness(source.pixels[y * source.width + x]) != 0) {
                     for (int angle = 0; angle < phiMax; ++angle) {
-                        float r = x * PApplet.cos(angle) + y * PApplet.sin(angle);
+                        float r = x * cosTable[angle] + y * sinTable[angle];
                         int normalized = Math.round((r + acc.height) / 2);
-                        minr = Math.min(normalized, minr);
-                        maxr = Math.max(normalized, maxr);
                         acc.accumulate(angle, normalized, 1);
                     }
                 }
             }
         }
-        System.out.println("maximum radius " + rMax);
-        System.out.println("minr: " + minr);
-        System.out.println("maxr: " + maxr);
         return acc;
     }
 
