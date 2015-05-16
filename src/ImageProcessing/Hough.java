@@ -69,7 +69,6 @@ public class Hough {
                     for (int angle = 0; angle < phiMax; ++angle) {
                         float r = x * cosTable[angle] + y * sinTable[angle];
                         int normalized = Math.round((r + rMax) / 2);
-//                        acc.accumulate(angle, normalized, 1);
                         accumulator[angle * rMax + normalized] += 1;
                     }
                 }
@@ -105,7 +104,7 @@ public class Hough {
         return houghImg;
     }
 
-    public static void drawLinesFromAccumulator(PApplet ctx, int[] acc, int width, float phiStep, float rStep, int rDim) {
+    public static void drawLinesFromAccumulator(PApplet ctx, int[] acc, int imgWidth, float phiStep, float rStep, int rDim) {
         int size = acc.length;
         for (int i = 0; i < size; ++i) {
             if (acc[i] > ACCUMULATOR_THRESHOLD) {
@@ -118,9 +117,9 @@ public class Hough {
                 int y0 = (int) (r / sin(phi));
                 int x1 = (int) (r / cos(phi));
                 int y1 = 0;
-                int x2 = width;
+                int x2 = imgWidth;
                 int y2 = (int) (-cos(phi) / sin(phi) * x2 + r / sin(phi));
-                int y3 = width;
+                int y3 = imgWidth;
                 int x3 = (int) (-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
 
                 ctx.stroke(204, 102, 0);
