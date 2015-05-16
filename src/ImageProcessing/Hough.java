@@ -40,10 +40,10 @@ public class Hough {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (ctx.brightness(source.pixels[y * width + x]) != 0) {
-                    for (int theta = phiDim - 1; theta >= 0; theta--){
-                        double r = cosTable[theta] * x + sinTable[theta] * y;
+                    for (int phi = phiDim - 1; phi >= 0; phi--){
+                        double r = cosTable[phi] * x + sinTable[phi] * y;
                         int rScaled = (int)Math.round(r * halfR / rDim) + halfR;
-                        accumulator[theta * phiDim + rScaled]++;
+                        accumulator[phi * phiDim + rScaled]++;
                     }
 
 //                    for (int phi = 0; phi < phiDim; ++phi) {
@@ -70,7 +70,7 @@ public class Hough {
     }
 
     public int phiDim() {
-        return (int) (2* Math.PI / phiStep);
+        return (int) (Math.PI / phiStep);
     }
 
     public int rDim(PImage img) {
