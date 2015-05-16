@@ -10,7 +10,7 @@ public class Assignment9 extends PApplet {
 
     PImage hough;
     PImage sobel;
-    int[] acc;
+    Utils.ArrayData acc;
     Hough h;
     PImage img;
 
@@ -20,7 +20,7 @@ public class Assignment9 extends PApplet {
         sobel = ImageConvolution.sobel(img, this);
         h = new Hough(phiStep, rStep);
         acc = h.computeAccumulator(this, sobel);
-        hough = Hough.drawAccumulator(this, acc, h.rDim(sobel), h.phiDim());
+        hough = Hough.drawAccumulator(this, acc);
         hough.resize(600,600);
         noLoop();
     }
@@ -28,6 +28,6 @@ public class Assignment9 extends PApplet {
     public void draw() {
         image(sobel, 0, 0);
         image(hough, img.width, 0);
-        Hough.drawLinesFromAccumulator(this, acc, sobel.width, h.rDim(sobel), phiStep, rStep);
+        Hough.drawLinesFromAccumulator(this, acc.dataArray, sobel.width, h.rDim(sobel), phiStep, rStep);
     }
 }

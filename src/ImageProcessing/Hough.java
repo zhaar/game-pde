@@ -3,6 +3,7 @@ package ImageProcessing;
 import processing.core.PApplet;
 import processing.core.PImage;
 
+import static ImageProcessing.Utils.*;
 import static ImageProcessing.Utils.goesThrough;
 import static processing.core.PApplet.*;
 
@@ -17,56 +18,32 @@ public class Hough {
         this.rStep = rStep;
     }
 
-    public int[] computeAccumulator(PApplet ctx, PImage source) {
+    public ArrayData computeAccumulator(PApplet ctx, PImage source) {
         int width = source.width;
         int height = source.height;
-        int phiDim = phiDim();
-        int rDim = rDim(source);
-        int halfR = rDim / 2;
-        int[] accumulator = new int[(phiDim + 2) * (rDim + 2)];
+        int phiMax = phiDim();
+        int rMax = rDim(source);
 
-        double[] sinTable = new double[phiDim];
-        double[] cosTable = new double[phiDim];
-        //juicy performances
-        for (int theta = phiDim - 1; theta >= 0; theta--)
-        {
-            double thetaRadians = theta * Math.PI / phiDim;
-            sinTable[theta] = Math.sin(thetaRadians);
-            cosTable[theta] = Math.cos(thetaRadians);
-        }
-
-        ctx.println("rDim: " + rDim);
-        ctx.println("phiDim: " + phiDim);
+        ArrayData acc = new ArrayData(phiMax + 2, rMax + 2);
+        float minr = 0;
+        float maxr = 0;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (ctx.brightness(source.pixels[y * width + x]) != 0) {
-                    for (int phi = phiDim - 1; phi >= 0; phi--){
-                        double r = cosTable[phi] * x + sinTable[phi] * y;
-                        int rScaled = (int)Math.round(r * halfR / rDim) + halfR;
-                        accumulator[phi * phiDim + rScaled]++;
+                if (ctx.brightness(source.pixels[y * source.width + x]) != 0) {
+                    for (int angle = 0; angle < phiMax; ++angle) {
+                        float r = x * PApplet.cos(angle) + y * PApplet.sin(angle);
+                        int normalized = Math.round((r + acc.height) / 2);
+                        minr = Math.min(normalized, minr);
+                        maxr = Math.max(normalized, maxr);
+                        acc.accumulate(angle, normalized, 1);
                     }
-
-//                    for (int phi = 0; phi < phiDim; ++phi) {
-//                        for (int r = 0; r < rDim; ++r) {
-//                            if (goesThrough(x,y,r,phi)) {
-//                                accumulator[phi * phiDim + r]++;
-//                            }
-//                        }
-//                    }
-                    // ...determine here all the lines (r, phi) passing through
-                    // pixel (x,y), convert (r,phi) to coordinates in the
-                    // accumulator, and increment accordingly the accumulator.
                 }
             }
         }
-//        for (int phi = 0; phi < phiDim; ++phi) {
-//            for (int r = 0; r < rDim; ++r) {
-//                ctx.print(accumulator[phi * phiDim + r] + " ");
-//            }
-//            ctx.println("\n");
-//        }
-
-        return accumulator;
+        System.out.println("maximum radius " + rMax);
+        System.out.println("minr: " + minr);
+        System.out.println("maxr: " + maxr);
+        return acc;
     }
 
     public int phiDim() {
@@ -78,9 +55,19 @@ public class Hough {
     }
 
     public static PImage drawAccumulator(PApplet ctx, int[] acc, int rDim, int phiDim) {
+        System.out.println("drawing accumulator image of size " + rDim + " , ");
         PImage houghImg = ctx.createImage(rDim + 2, phiDim + 2, ctx.ALPHA);
         for (int i = 0; i < acc.length; i++) {
             houghImg.pixels[i] = ctx.color(ctx.min(255, acc[i]));
+        }
+        houghImg.updatePixels();
+        return houghImg;
+    }
+
+    public static PImage drawAccumulator(PApplet ctx, ArrayData acc) {
+        PImage houghImg = ctx.createImage(acc.width, acc.height, ctx.ALPHA);
+        for (int i = 0; i < acc.dataArray.length; i++) {
+            houghImg.pixels[i] = ctx.color(ctx.min(255, acc.dataArray[i]));
         }
         houghImg.updatePixels();
         return houghImg;
