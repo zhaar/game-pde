@@ -17,13 +17,18 @@ public class QuadGraph {
         
         // The maximum possible number of edges is sum(0..n) = n * (n + 1)/2
         graph = new int[n * (n + 1)/2][2];
-                
+
         int idx =0;
         
         for (int i = 0; i < lines.size(); i++) {
             for (int j = i + 1; j < lines.size(); j++) {
                 if (intersect(lines.get(i), lines.get(j), width, height)) {
-
+                    List<PVector> intersections = Hough.getIntersections(lines);
+                    for (PVector pair: intersections) {
+                        graph[idx][0] = (int) pair.x;
+                        graph[idx][1] = (int) pair.y;
+                        idx++;
+                    }
                     // TODO
                     // fill the graph using intersect() to check if two lines are
                     // connected in the graph.

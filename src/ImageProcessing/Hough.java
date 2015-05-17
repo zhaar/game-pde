@@ -89,21 +89,41 @@ public class Hough {
         return vectors;
     }
 
-    public static List<Pair<Integer, Integer>> getIntersections(List<Pair<Integer, Integer>> lines) {
-        ArrayList<Pair<Integer, Integer>> intersections = new ArrayList<>();
+//    public static List<Pair<Integer, Integer>> getIntersections(List<Pair<Integer, Integer>> lines) {
+//        ArrayList<Pair<Integer, Integer>> intersections = new ArrayList<>();
+//
+//        for (int i = 0; i < lines.size() - 1; i++) {
+//            Pair<Integer, Integer> line1 = lines.get(i);
+//            for (int j = i + 1; j < lines.size(); j++) {
+//                Pair<Integer, Integer> line2 = lines.get(j);
+//                int r1 = line1.r();
+//                int r2 = line2.r();
+//                int phi1 = line1.phi();
+//                int phi2 = line2.phi();
+//                float d = cos(phi2) * sin(phi1) - cos(phi1) * sin(phi2);
+//                float x = r2 * sin(phi1) - r1 * sin(phi2);
+//                float y = -r2 * cos(phi1) + r1 * cos(phi2);
+//                intersections.add(new Pair<>(Math.round(x / d), Math.round(y / d)));
+//            }
+//        }
+//        return intersections;
+//    }
+
+    public static List<PVector> getIntersections(List<PVector> lines) {
+        ArrayList<PVector> intersections = new ArrayList<>();
 
         for (int i = 0; i < lines.size() - 1; i++) {
-            Pair<Integer, Integer> line1 = lines.get(i);
+            PVector line1 = lines.get(i);
             for (int j = i + 1; j < lines.size(); j++) {
-                Pair<Integer, Integer> line2 = lines.get(j);
-                int r1 = line1.r();
-                int r2 = line2.r();
-                int phi1 = line1.phi();
-                int phi2 = line2.phi();
+                PVector line2 = lines.get(j);
+                int r1 = (int) line1.x;
+                int r2 = (int) line2.x;
+                int phi1 = (int) line1.y;
+                int phi2 = (int) line2.y;
                 float d = cos(phi2) * sin(phi1) - cos(phi1) * sin(phi2);
                 float x = r2 * sin(phi1) - r1 * sin(phi2);
                 float y = -r2 * cos(phi1) + r1 * cos(phi2);
-                intersections.add(new Pair<>(Math.round(x / d), Math.round(y / d)));
+                intersections.add(new PVector(Math.round(x / d), Math.round(y / d)));
             }
         }
         return intersections;
@@ -180,7 +200,6 @@ public class Hough {
     }
 
     public static PImage drawAccumulator(PApplet ctx, int[] acc, int rDim, int phiDim) {
-        System.out.println("drawing accumulator image of size " + rDim + " , ");
         PImage houghImg = ctx.createImage(rDim + 2, phiDim + 2, ALPHA);
         for (int i = 0; i < acc.length; i++) {
             houghImg.pixels[i] = ctx.color(min(255, acc[i]));
@@ -190,11 +209,6 @@ public class Hough {
     }
 
     public static PImage drawAccumulator(PApplet ctx, ArrayData acc) {
-//        PImage houghImg = ctx.createImage(acc.radius, acc.height, ALPHA);
-//        for (int i = 0; i < acc.dataArray.length; i++) {
-//            houghImg.pixels[i] = ctx.color(min(255, acc.dataArray[i]));
-//        }
-//        houghImg.updatePixels();
         return drawAccumulator(ctx, acc.dataArray, acc.radius - 2, acc.angle - 2);
     }
 
