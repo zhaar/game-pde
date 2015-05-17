@@ -16,6 +16,11 @@ public class Utils {
 
         public T _1() { return t; }
         public S _2() { return s; }
+
+        @Override
+        public String toString() {
+            return "(" + t.toString() + ", " + s.toString() + ")";
+        }
     }
 
     public static boolean goesThrough(int x, int y, int r, int phi) {
@@ -54,5 +59,6 @@ public class Utils {
         public void accumulate(int x, int y, int delta) {
             set(x, y, get(x, y) + delta);
         }
+
     }
 }

@@ -17,7 +17,7 @@ public class Assignment9 extends PApplet {
     PImage img;
 
     public void setup() {
-        size(640, 480);
+
         String[] cameras = Capture.list();
         if (cameras.length == 0) {
             println("There are no cameras available for capture.");
@@ -32,27 +32,30 @@ public class Assignment9 extends PApplet {
             cam = new Capture(this, cameras[goodCam]);
             cam.start();
         }
+        size(800, 600);
         img = loadImage("board1.jpg");
         sobel = ImageConvolution.sobel(img, this);
+
+        int lineCount = 100;
         h = new Hough(phiStep, rStep);
         acc = h.computeAccumulator2(this, sobel);
         hough = Hough.drawAccumulator(this, acc, h.rDim(img), h.phiDim());
         hough.resize(600, 600);
-//        noLoop();
+        noLoop();
     }
 
     public void draw() {
-        if (cam.available() == true) {
-            cam.read();
-        }
-        img = cam.get();
-        pushMatrix();
-        scale(-1.0f, 1.0f);
-        image(ImageConvolution.sobel(img, this),-img.width,0);
-        popMatrix();
+//        if (cam.available() == true) {
+//            cam.read();
+//        }
+//        img = cam.get();
+//        pushMatrix();
+//        scale(-1.0f, 1.0f);
+//        image(ImageConvolution.sobel(img, this),-img.width,0);
+//        popMatrix();
 
-//        image(img, 0, 0);
-//        image(hough,0, 0);
-//        Hough.drawLinesFromAccumulator(this, acc, sobel.width, phiStep, rStep, h.rDim(img));
+        image(img, 0, 0);
+        image(sobel,0, 0);
+        Hough.drawLinesFromBestCandidates(this, Hough.bestCandidates(acc, 200, 1000), sobel.width, phiStep, rStep, h.rDim(img));
     }
 }
