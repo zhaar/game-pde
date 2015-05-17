@@ -1,4 +1,4 @@
-package ImageProcessing;
+package ImageProcessing.GenericProcess;
 
 import processing.core.PApplet;
 import processing.core.PImage;

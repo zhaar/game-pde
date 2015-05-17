@@ -58,7 +58,8 @@ public class Assignment9 extends PApplet {
         image(img, 0, 0);
         image(sobel, img.width, 0);
         image(hough, img.width+sobel.width, 0);
-//        Hough.drawLinesFromAccumulator(this, acc, sobel.width, phiStep, rStep);
+        Hough.drawLinesFromAccumulator(this, acc, sobel.width, phiStep, rStep);
         Hough.drawLinesFromBestCandidates(this, Hough.sortAndTake(Hough.bestCandidates(acc, 200), 1000), sobel.width, phiStep, rStep, acc.radius);
+
     }
 }

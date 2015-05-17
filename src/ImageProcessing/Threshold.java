@@ -1,5 +1,6 @@
 package ImageProcessing;
 
+import ImageProcessing.GenericProcess.ThresholdFilter;
 import UI.HScrollbar;
 import processing.core.PApplet;
 import processing.core.PImage;
