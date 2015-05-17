@@ -7,8 +7,9 @@ import processing.core.PImage;
 import processing.video.Capture;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Assignment9 extends PApplet {
+public class ImageProcessing extends PApplet {
 
     private static final float phiStep = 0.06f;
     private static final float rStep = 2.5f;
@@ -21,6 +22,7 @@ public class Assignment9 extends PApplet {
     PImage img, originalImg;
     HScrollbar scrollbar;
     List<Utils.Pair<Integer,Integer>> candidates;
+    List<Utils.Pair<Integer,Integer>> pairs;
 
     public void setup() {
 
@@ -76,8 +78,8 @@ public class Assignment9 extends PApplet {
         image(hough, img.width + sobel.width, 0);
         candidates = Hough.sortAndTake(Hough.improvedCandidates(acc, 200), 6);
         assert candidates.size() <= 6;
-        Hough.drawLinesFromBestCandidates(this, candidates , sobel.width, phiStep, rStep, acc.radius);
-        Hough.drawIntersections(this, Hough.getIntersections(candidates));
+        Hough.drawLinesFromBestCandidates(this, candidates , sobel.width, phiStep, rStep, acc.radius-2);
+        Hough.drawIntersections(this, Hough.getIntersections(candidates.parallelStream().map(p -> Hough.arrayIndexToPair(acc, p, rStep, phiStep)).collect(Collectors.toList())));
         scrollbar.display();
         scrollbar.update();
 

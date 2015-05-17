@@ -4,6 +4,7 @@ import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -12,6 +13,7 @@ import static processing.core.PApplet.*;
 
 public class Hough {
 
+    //Minimum number of pixels a line must go through to make the cut
     private static final int ACCUMULATOR_THRESHOLD = 200;
     private final float phiStep;
     private final float rStep;
@@ -21,6 +23,22 @@ public class Hough {
         this.rStep = rStep;
     }
 
+    public int phiDim() {
+        return (int) (Math.PI / phiStep);
+    }
+
+    public int rDim(PImage img) {
+        return (int) (((img.width + img.height) * 2 + 1) / rStep);
+    }
+
+    /**
+     * Accumulator produces an array of the size r * phi.<br/>
+     * The r axis ranges from -rMax to + rMax and is normalized to <br/>
+     * 0 to 2rMax. Angle goes from 0 to PI
+     * @param ctx drawing context
+     * @param source source image
+     * @return an array with signature array[radius][angle] = votes
+     */
     public ArrayData computeAccumulator(PApplet ctx, PImage source) {
         int width = source.width;
         int height = source.height;
@@ -50,56 +68,50 @@ public class Hough {
         return acc;
     }
 
-    public int[] computeAccumulator2(PApplet ctx, PImage source) {
-        int radius = source.width;
-        int height = source.height;
-        int phiMax = phiDim();
-        int rMax = rDim(source);
-
-        int[] accumulator = new int[(phiMax + 2) * (rMax + 2)];
-
-        float[] sinTable = new float[phiMax];
-        float[] cosTable = new float[phiMax];
-        for(int angle = 0; angle < phiMax; ++angle) {
-            sinTable[angle] = sin(PI * angle/phiMax);
-            cosTable[angle] = cos(PI * angle/phiMax);
-        }
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < radius; x++) {
-                if (ctx.brightness(source.pixels[y * source.width + x]) != 0) {
-                    for (int angle = 0; angle < phiMax; ++angle) {
-                        float r = x * cosTable[angle] + y * sinTable[angle];
-                        int normalized = Math.round((r + rMax) / 2);
-                        accumulator[angle * rMax + normalized] += 1;
-                    }
-                }
-            }
-        }
-        return accumulator;
-    }
-
     public static List<Pair<Integer, Integer>> dataAsPairs(ArrayData arr) {
         ArrayList<Pair<Integer, Integer>> vectors = new ArrayList<>(arr.dataArray.length);
         for (int radius = 0; radius < arr.radius; ++radius) {
             for (int angle = 0; angle < arr.angle; ++angle) {
-                vectors.add(new Pair<>(radius, angle));
+                vectors.add(new Pair<>(radius - arr.radius/2, angle));
             }
         }
         return vectors;
     }
 
-    public static List<Pair<Integer, Integer>> getIntersections(List<Pair<Integer, Integer>> lines) {
+    /**
+     * Converts a Pair of the form (accumulatorIndex, votes) to (radius, phi)
+     * @param array
+     * @param pair
+     * @return
+     */
+    public static Pair<Float, Float> arrayIndexToPair(ArrayData array, Pair<Integer, Integer> pair, float rStep, float phiStep) {
+        int index = pair._1;
+        int accPhi = (index / array.radius) - 1;
+        int accR = index - (accPhi + 1) * array.radius - 1;
+        float r = (accR - (array.radius-3) * 0.5f) * rStep;
+        float phi = accPhi * phiStep;
+//        int phi = index % array.angle;
+//        int radius = index/array.radius ;
+        return new Pair<>(r, phi);
+    }
+
+    /**
+     * computes the list of all intersection between the given lines
+     * Lines must be in (radius, phi) form for this to work
+     * @param lines list of lines computed from hough
+     * @return list of intersections
+     */
+    public static List<Pair<Integer, Integer>> getIntersections(List<Pair<Float, Float>> lines) {
         ArrayList<Pair<Integer, Integer>> intersections = new ArrayList<>();
 
         for (int i = 0; i < lines.size() - 1; i++) {
-            Pair<Integer, Integer> line1 = lines.get(i);
+            Pair<Float, Float> line1 = lines.get(i);
             for (int j = i + 1; j < lines.size(); j++) {
-                Pair<Integer, Integer> line2 = lines.get(j);
-                int r1 = line1.r;
-                int r2 = line2.r;
-                int phi1 = line1.phi;
-                int phi2 = line2.phi;
+                Pair<Float, Float> line2 = lines.get(j);
+                float r1 = line1.r;
+                float r2 = line2.r;
+                float phi1 = line1.phi;
+                float phi2 = line2.phi;
                 float d = cos(phi2) * sin(phi1) - cos(phi1) * sin(phi2);
                 float x = r2 * sin(phi1) - r1 * sin(phi2);
                 float y = -r2 * cos(phi1) + r1 * cos(phi2);
@@ -118,7 +130,7 @@ public class Hough {
      * Returns a list of pairs of a given length corresponding to the best candidates in the accumulator
      * @param acc the line accumulator
      * @param minValue minimum values the candidates must conform to
-     * @return a list of the best candidates as pairs of index in accumulator and value
+     * @return a list of the best candidates as pairs of (accumulatorIndex, votes)
      */
     public static List<Pair<Integer, Integer>> bestCandidates(int[] acc, int minValue) {
         ArrayList<Pair<Integer, Integer>> arr = new ArrayList<>(acc.length);
@@ -133,6 +145,12 @@ public class Hough {
     }
 
 
+    /**
+     * Improved version for picking best candidates, uses cluster approximation to detect nearby lines.
+     * @param acc line accumulator
+     * @param minVote minimum vote count each line must conform to
+     * @return a list of the best candidates as pairs of (accumulatorIndex, votes)
+     */
     public static List<Pair<Integer,Integer>> improvedCandidates(ArrayData acc, int minVote) {
         int neighboorhood = 10;
         ArrayList<Pair<Integer, Integer>> candidates = new ArrayList<>();
@@ -170,14 +188,6 @@ public class Hough {
         return candidates;
     }
 
-    public int phiDim() {
-        return (int) (Math.PI / phiStep);
-    }
-
-    public int rDim(PImage img) {
-        return (int) (((img.width + img.height) * 2 + 1) / rStep);
-    }
-
     public static PImage drawAccumulator(PApplet ctx, int[] acc, int rDim, int phiDim) {
         PImage houghImg = ctx.createImage(rDim + 2, phiDim + 2, ALPHA);
         for (int i = 0; i < acc.length; i++) {
@@ -195,6 +205,15 @@ public class Hough {
         drawLinesFromAccumulator(ctx, arr.dataArray, imgWidth, phiStep, rStep, arr.radius);
     }
 
+    /**
+     * Draw the lines from a line accumulator into the given drawing context
+     * @param ctx Drawing context
+     * @param acc line accumulator
+     * @param imgWidth max width in the drawing context
+     * @param phiStep discrete angle step
+     * @param rStep discrete radius step
+     * @param rDim radius count
+     */
     public static void drawLinesFromAccumulator(PApplet ctx, int[] acc, int imgWidth, float phiStep, float rStep, int rDim) {
         int size = acc.length;
         for (int i = 0; i < size; ++i) {

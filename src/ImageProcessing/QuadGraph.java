@@ -12,7 +12,7 @@ public class QuadGraph {
     List<int[]> cycles = new ArrayList<int[]>();
     int[][] graph;
 
-    public void build(List<Pair<Integer, Integer>> lines, int width, int height) {
+    public void build(List<Pair<Float, Float>> lines, int width, int height) {
         
         int n = lines.size();
         
@@ -44,7 +44,7 @@ public class QuadGraph {
     /** Returns true if polar lines 1 and 2 intersect 
      * inside an area of size (width, height)
      */
-    public static boolean intersect(Pair<Integer, Integer> line1, Pair<Integer, Integer> line2, int width, int height) {
+    public static boolean intersect(Pair<Float, Float> line1, Pair<Float, Float> line2, int width, int height) {
 
         double sin_t1 = Math.sin(line1.phi);
         double sin_t2 = Math.sin(line2.phi);
