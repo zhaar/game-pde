@@ -5,8 +5,10 @@ import processing.core.PImage;
 
 public class ImageConvolution {
     public static PImage convolute(PImage img, float[][] kernel, PApplet pApplet) {
+        return convolute(img, kernel, pApplet, 1f);
+    }
 
-        float weight = 1.f;
+    public static PImage convolute(PImage img, float[][] kernel, PApplet pApplet, float weight) {
         PImage result = pApplet.createImage(img.width, img.height, PImage.ALPHA);
 
         int N = 3;
@@ -39,6 +41,13 @@ public class ImageConvolution {
             }
         }
         return result;
+    }
+    
+    public static PImage gauss(PImage img, PApplet applet) {
+        float[][] kernel = {{9, 12, 9},
+                {12, 15, 12},
+                {9, 12, 9}};
+        return convolute(img, kernel, applet, 99);
     }
 
     public static PImage sobel(PImage img, PApplet pApplet) {

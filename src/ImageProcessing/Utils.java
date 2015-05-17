@@ -30,11 +30,6 @@ public class Utils {
         return r == x * Math.cos(phi) + y * Math.sin(phi);
     }
 
-    @FunctionalInterface
-    public interface Function<T,S>{
-        S Apply(T arg);
-    }
-
     public static class ArrayData {
         public final int[] dataArray;
         public final int radius;

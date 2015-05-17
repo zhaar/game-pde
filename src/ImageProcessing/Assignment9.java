@@ -14,7 +14,7 @@ public class Assignment9 extends PApplet {
     PImage sobel;
     Utils.ArrayData acc;
     Hough h;
-    PImage img;
+    PImage img, originalImg;
 
     public void setup() {
 
@@ -33,11 +33,16 @@ public class Assignment9 extends PApplet {
 //            cam.start();
 //        }
         size(1400, 400);
-        img = loadImage("board1.jpg");
-        img.resize(500, 400);
+        originalImg = loadImage("board1.jpg");
+        originalImg.resize(500, 400);
+        img = originalImg;
+        ThresholdFilter tFilter = new ThresholdFilter(this, ThresholdFilter.binaryThreshold(120), img);
+        img = tFilter.applyFilter();
+        img = ImageConvolution.gauss(img, this);
+        tFilter = new ThresholdFilter(this, ThresholdFilter.binaryThreshold(50), img);
+        img = tFilter.applyFilter();
         sobel = ImageConvolution.sobel(img, this);
 
-        int lineCount = 100;
         h = new Hough(phiStep, rStep);
         acc = h.computeAccumulator(this, sobel);
         hough = Hough.drawAccumulator(this, acc);
