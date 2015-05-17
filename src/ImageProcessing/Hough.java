@@ -78,6 +78,27 @@ public class Hough {
         return accumulator;
     }
 
+    public static List<Pair<Integer, Integer>> getIntersections(List<Pair<Integer, Integer>> lines) {
+        ArrayList<Pair<Integer, Integer>> intersections = new ArrayList<>();
+
+        for (int i = 0; i < lines.size() - 1; i++) {
+            Pair<Integer, Integer> line1 = lines.get(i);
+            for (int j = i + 1; j < lines.size(); j++) {
+                Pair<Integer, Integer> line2 = lines.get(j);
+                int r1 = line1._1();
+                int r2 = line2._1();
+                int phi1 = line1._2();
+                int phi2 = line2._2();
+                float d = cos(phi2) * sin(phi1) - cos(phi1) * sin(phi2);
+                float x = r2 * sin(phi1) - r1 * sin(phi2);
+                float y = -r2 * cos(phi1) + r1 * cos(phi2);
+                intersections.add(new Pair<>(Math.round(x / d), Math.round(y / d)));
+            }
+        }
+        return intersections;
+    }
+
+
     public static List<Pair<Integer, Integer>> sortAndTake(List<Pair<Integer, Integer>> list, int count) {
         Collections.sort(list, (o1, o2) -> (o2._2() > o2._2() || o1._2() == o2._2() && o1._1() < o2._1()) ? -1 : 1);
         return list.stream().limit(count).collect(Collectors.toList());
@@ -225,5 +246,12 @@ public class Hough {
                 ctx.line(x2, y2, x3, y3);
             }
         }
+    }
+
+    public static void drawIntersections(PApplet ctx, List<Pair<Integer, Integer>> intesections) {
+        intesections.forEach(p -> {
+            ctx.fill(255, 128, 0);
+            ctx.ellipse(p._1(), p._2(), 10, 10);
+        });
     }
 }
