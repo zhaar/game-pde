@@ -32,15 +32,16 @@ public class Assignment9 extends PApplet {
 //            cam = new Capture(this, cameras[goodCam]);
 //            cam.start();
 //        }
-        size(800, 600);
+        size(1400, 400);
         img = loadImage("board1.jpg");
+        img.resize(500, 400);
         sobel = ImageConvolution.sobel(img, this);
 
         int lineCount = 100;
         h = new Hough(phiStep, rStep);
         acc = h.computeAccumulator(this, sobel);
         hough = Hough.drawAccumulator(this, acc);
-        hough.resize(600, 600);
+        hough.resize(400, 400);
         noLoop();
     }
 
@@ -54,9 +55,9 @@ public class Assignment9 extends PApplet {
 //        image(ImageConvolution.sobel(img, this),-img.radius,0);
 //        popMatrix();
 
-//        image(img, 0, 0);
-//        image(sobel,0, 0);
-        image(hough, 0, 0);
+        image(img, 0, 0);
+        image(sobel, img.width, 0);
+        image(hough, img.width+sobel.width, 0);
 //        Hough.drawLinesFromAccumulator(this, acc, sobel.width, phiStep, rStep);
         Hough.drawLinesFromBestCandidates(this, Hough.sortAndTake(Hough.bestCandidates(acc, 200), 1000), sobel.width, phiStep, rStep, acc.radius);
     }
