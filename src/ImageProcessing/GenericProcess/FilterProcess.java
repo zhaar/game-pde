@@ -4,34 +4,55 @@ import processing.core.PApplet;
 
 import java.util.function.Predicate;
 
-public class FilterProcess extends GenetricImageProcess{
+public class FilterProcess extends GenericImageProcess {
 
-    public FilterProcess(PApplet context, Predicate<Integer> filterfunction, ThresholdFilter.ThresholdFunction fn) {
-        super(context, (pixel, source, index) -> {
-            if (filterfunction.test(pixel)) {
-                return fn.apply(pixel);
-            } else {
-                return pixel;
-            });
+    public FilterProcess(PApplet context, ThresholdFunction fn) {
+        super(context, ((pixel, source, index) -> fn.apply(context, pixel)));
     }
 
-    public FilterProcess binaryThreshold(PApplet context, int value) {
-        return new FilterProcess(context, ThresholdFilter.binaryThreshold(value));
+    public static FilterProcess binaryThreshold(PApplet context, int value) {
+        return new FilterProcess(context, binaryThresholdFunction(value));
     }
 
-    public FilterProcess invertedBinaryThreshold(PApplet context, int value) {
-        return new FilterProcess(context, ThresholdFilter.invertedBinaryThreshold(value));
+    public static FilterProcess invertedBinaryThreshold(PApplet context, int value) {
+        return new FilterProcess(context, invertedBinaryThresholdFunction(value));
     }
 
-    public FilterProcess truncateThreshold(PApplet context, int value) {
-        return new FilterProcess(context, ThresholdFilter.truncateThreshold(value));
+    public static FilterProcess truncateThreshold(PApplet context, int value) {
+        return new FilterProcess(context, truncateThresholdFunction(value));
     }
 
-    public FilterProcess toZeroThreshold(PApplet context, int value) {
-        return new FilterProcess(context, ThresholdFilter.toZeroThreshold(value));
+    public static FilterProcess toZeroThreshold(PApplet context, int value) {
+        return new FilterProcess(context, toZeroThresholdFunction(value));
     }
 
-    public FilterProcess invertedToZeroThreshold(PApplet context, int value) {
-        return new FilterProcess(context, ThresholdFilter.invertedToZeroThreshold(value));
+    public static FilterProcess invertedToZeroThreshold(PApplet context, int value) {
+        return new FilterProcess(context, invertedToZeroThresholdFunction(value));
+    }
+
+
+    private static ThresholdFunction binaryThresholdFunction(final int threshold) {
+        return (ctx, pixelValue) -> (ctx.brightness(pixelValue) < threshold) ? 0 : 255;
+    }
+
+    private static ThresholdFunction invertedBinaryThresholdFunction(final int threshold) {
+        return (ctx, pixelValue) -> ctx.brightness(pixelValue) > threshold ? 0 : 255;
+    }
+
+    private static ThresholdFunction truncateThresholdFunction(final int threshold) {
+        return (ctx, pixelValue) -> Math.min(threshold, pixelValue);
+    }
+
+    private static ThresholdFunction toZeroThresholdFunction(final int threshold) {
+        return (ctx, pixelValue) -> ctx.brightness(pixelValue) > threshold ? pixelValue : 0;
+    }
+
+    private static ThresholdFunction invertedToZeroThresholdFunction( final int threshold) {
+        return (ctx, pixelValue) -> ctx.brightness(pixelValue) < threshold ? pixelValue : 0;
+    }
+
+    @FunctionalInterface
+    public interface ThresholdFunction {
+        int apply(PApplet context, int pixelValue);
     }
 }

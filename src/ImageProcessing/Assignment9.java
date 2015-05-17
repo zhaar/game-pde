@@ -1,5 +1,6 @@
 package ImageProcessing;
 
+import ImageProcessing.GenericProcess.FilterProcess;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.video.Capture;
@@ -15,6 +16,7 @@ public class Assignment9 extends PApplet {
     Utils.ArrayData acc;
     Hough h;
     PImage img;
+    PImage filtered;
 
     public void setup() {
 
@@ -34,7 +36,8 @@ public class Assignment9 extends PApplet {
 //        }
         size(1400, 400);
         img = loadImage("board1.jpg");
-        img.resize(500, 400);
+//        img.resize(500, 400);
+        filtered = FilterProcess.binaryThreshold(this, 100).immutableCompte(img);
         sobel = ImageConvolution.sobel(img, this);
 
         int lineCount = 100;
@@ -56,6 +59,7 @@ public class Assignment9 extends PApplet {
 //        popMatrix();
 
         image(img, 0, 0);
+        image(filtered, 0, 0);
         image(sobel, img.width, 0);
         image(hough, img.width+sobel.width, 0);
         Hough.drawLinesFromAccumulator(this, acc, sobel.width, phiStep, rStep);
