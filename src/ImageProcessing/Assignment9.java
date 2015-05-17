@@ -35,11 +35,18 @@ public class Assignment9 extends PApplet {
         size(1400, 400);
         originalImg = loadImage("board1.jpg");
         originalImg.resize(500, 400);
+        
+        //noLoop();
+    }
+
+    private void transformImage() {
+        long time = System.currentTimeMillis();
         img = originalImg;
         ThresholdFilter tFilter = new ThresholdFilter(this, ThresholdFilter.binaryThreshold(120), img);
         img = tFilter.applyFilter();
         img = ImageConvolution.gauss(img, this);
-        tFilter = new ThresholdFilter(this, ThresholdFilter.binaryThreshold(50), img);
+        img = ImageConvolution.gauss(img, this);
+        tFilter = new ThresholdFilter(this, ThresholdFilter.binaryThreshold(80), img);
         img = tFilter.applyFilter();
         sobel = ImageConvolution.sobel(img, this);
 
@@ -47,9 +54,9 @@ public class Assignment9 extends PApplet {
         acc = h.computeAccumulator(this, sobel);
         hough = Hough.drawAccumulator(this, acc);
         hough.resize(400, 400);
-        noLoop();
+        System.out.println(System.currentTimeMillis() - time);
     }
-
+    
     public void draw() {
 //        if (cam.available() == true) {
 //            cam.read();
@@ -59,7 +66,7 @@ public class Assignment9 extends PApplet {
 //        scale(-1.0f, 1.0f);
 //        image(ImageConvolution.sobel(img, this),-img.radius,0);
 //        popMatrix();
-
+        transformImage();
         image(img, 0, 0);
         image(sobel, img.width, 0);
         image(hough, img.width+sobel.width, 0);
