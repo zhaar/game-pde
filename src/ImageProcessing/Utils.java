@@ -48,16 +48,16 @@ public class Utils {
             this.angle = angle;
         }
 
-        public int get(int x, int y) {
-            return dataArray[x * radius + y];
+        public int get(int r, int phi) {
+            return dataArray[phi * radius + r];
         }
 
-        public void set(int x, int y, int value) {
-            dataArray[x * radius + y] = value;
+        public void set(int r, int phi, int value) {
+            dataArray[phi * radius + r] = value;
         }
 
-        public void accumulate(int x, int y, int delta) {
-            set(x, y, get(x, y) + delta);
+        public void accumulate(int r, int phi, int delta) {
+            dataArray[phi * radius + r] += delta;
         }
     }
 }

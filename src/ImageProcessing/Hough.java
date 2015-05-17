@@ -41,7 +41,7 @@ public class Hough {
                     for (int angle = 0; angle < phiMax; ++angle) {
                         float r = x * cosTable[angle] + y * sinTable[angle];
                         int normalized = Math.round((r + acc.radius) / 2);
-                        acc.accumulate(angle, normalized, 1);
+                        acc.accumulate(normalized, angle, 1);
                     }
                 }
             }
@@ -78,26 +78,66 @@ public class Hough {
         return accumulator;
     }
 
+    public static List<Pair<Integer, Integer>> sortAndTake(List<Pair<Integer, Integer>> list, int count) {
+        Collections.sort(list, (o1, o2) -> (o2._2() > o2._2() || o1._2() == o2._2() && o1._1() < o2._1()) ? -1 : 1);
+        return list.stream().limit(count).collect(Collectors.toList());
+    }
+
     /**
      * Returns a list of pairs of a given length corresponding to the best candidates in the accumulator
      * @param acc the line accumulator
      * @param minValue minimum values the candidates must conform to
-     * @param count number of candidates
-     * @return a list of the few best candidates as pairs of index in accumulator and value
+     * @return a list of the best candidates as pairs of index in accumulator and value
      */
-    public static List<Pair<Integer, Integer>> bestCandidates(int[] acc, int minValue, int count) {
+    public static List<Pair<Integer, Integer>> bestCandidates(int[] acc, int minValue) {
         ArrayList<Pair<Integer, Integer>> arr = new ArrayList<>(acc.length);
         for (int index = 0; index < acc.length; ++index) {
             arr.add(new Pair<>(index, acc[index]));
         }
-        Collections.sort(arr, (o1, o2) -> (o2._2() > o2._2() || o1._2() == o2._2() && o1._1() < o2._1()) ? -1 : 1);
-        return arr.stream().filter(p -> p._2() > minValue).limit(count).collect(Collectors.toList());
+        return arr.stream().filter(p -> p._2() > minValue).collect(Collectors.toList());
     }
 
-//    public static List<Integer> improvedCandidates(int[] acc, int minVote) {
-//        int neighboorhood = 10;
-//        for (int accR = 0; accR < rDim)
-//    }
+    public static List<Pair<Integer, Integer>> bestCandidates(ArrayData acc, int minValue) {
+        return bestCandidates(acc.dataArray, minValue);
+    }
+
+
+    public static List<Pair<Integer,Integer>> improvedCandidates(ArrayData acc, int minVote) {
+        int neighboorhood = 10;
+        ArrayList<Pair<Integer, Integer>> candidates = new ArrayList<>();
+        for (int accR = 0; accR < acc.radius; accR++) {
+            for (int accPhi = 0; accPhi < acc.angle; accPhi++) {
+
+                int idx = (accPhi + 1) * acc.radius + accR + 1;
+
+                if (acc.dataArray[idx] > minVote) {
+                    boolean bestCandidate = true;
+                    for (int dPhi = -neighboorhood / 2; dPhi < (neighboorhood / 2) + 1; dPhi++) {
+                        if (accPhi + dPhi < 0 || accPhi + dPhi >= acc.angle) {
+                            continue;
+                        }
+                        for (int dR = -neighboorhood / 2; dR < (neighboorhood / 2) + 1; dR++) {
+                            if (accR + dR < 0 || accR + dR >= acc.radius) {
+                                continue;
+                            }
+                            int neighbourIdx = (accPhi + dPhi + 1) * (acc.radius + 2) + accR + dR + 1;
+                            if (acc.dataArray[idx] < acc.dataArray[neighbourIdx]) {
+                                bestCandidate = false;
+                                break;
+                            }
+                        }
+                        if (!bestCandidate) {
+                            break;
+                        }
+                    }
+                    if (bestCandidate) {
+                        candidates.add(new Pair<>(idx, acc.dataArray[idx]));
+                    }
+                }
+            }
+        }
+        return candidates;
+    }
 
     public int phiDim() {
         return (int) (Math.PI / phiStep);
