@@ -6,27 +6,25 @@ public class Utils {
 
     public static class Pair<T, S> {
 
-        private final T t;
-        private final S s;
+        public final T _1;
+        public final S _2;
+        public final T r;
+        public final S phi;
 
         public Pair(T t, S s) {
-            this.t = t;
-            this.s = s;
+            this._1 = t;
+            this._2 = s;
+            this.r = t;
+            this.phi = s;
         }
-
-        public T _1() { return t; }
-        public S _2() { return s; }
-        public T r() { return t; }
-        public S phi() { return s; }
 
         @Override
         public String toString() {
-            return "(" + t.toString() + ", " + s.toString() + ")";
+            return "(" + _1.toString() + ", " + _2.toString() + ")";
         }
     }
 
     public static boolean goesThrough(int x, int y, int r, int phi) {
-//        System.out.println("testing value " + x + ", " + y + " with line r:" + r + ", phi:" + phi);
         return r == x * Math.cos(phi) + y * Math.sin(phi);
     }
 

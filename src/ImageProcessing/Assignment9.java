@@ -6,6 +6,8 @@ import processing.core.PApplet;
 import processing.core.PImage;
 import processing.video.Capture;
 
+import java.util.List;
+
 public class Assignment9 extends PApplet {
 
     private static final float phiStep = 0.06f;
@@ -18,6 +20,7 @@ public class Assignment9 extends PApplet {
     Hough h;
     PImage img, originalImg;
     HScrollbar scrollbar;
+    List<Utils.Pair<Integer,Integer>> candidates;
 
     public void setup() {
 
@@ -43,7 +46,6 @@ public class Assignment9 extends PApplet {
     }
 
     private void transformImage() {
-        long time = System.currentTimeMillis();
         img = originalImg;
         img = FilterProcess.binaryThreshold(this, (int) (scrollbar.getPos() * 240)).immutableCompute(img);
         img = ImageConvolution.gauss(img, this);
@@ -51,14 +53,15 @@ public class Assignment9 extends PApplet {
         img = FilterProcess.binaryThreshold(this, (int) (scrollbar.getPos() * 160)).immutableCompute(img);
         sobel = ImageConvolution.sobel(img, this);
 
-        h = new Hough(phiStep, rStep);
+        h = new Hough(rStep, phiStep);
         acc = h.computeAccumulator(this, sobel);
         hough = Hough.drawAccumulator(this, acc);
         hough.resize(400, 400);
-        System.out.println(System.currentTimeMillis() - time);
     }
     
     public void draw() {
+        long time = System.currentTimeMillis();
+
 //        if (cam.available() == true) {
 //            cam.read();
 //        }
@@ -68,13 +71,17 @@ public class Assignment9 extends PApplet {
 //        image(ImageConvolution.sobel(img, this),-img.radius,0);
 //        popMatrix();
         transformImage();
-        image(img, 0, 0);
+        image(originalImg, 0, 0);
         image(sobel, img.width, 0);
         image(hough, img.width + sobel.width, 0);
-        Hough.drawLinesFromAccumulator(this, acc, sobel.width, phiStep, rStep);
-        Hough.drawLinesFromBestCandidates(this, Hough.sortAndTake(Hough.bestCandidates(acc, 200), 1000), sobel.width, phiStep, rStep, acc.radius);
-
+        candidates = Hough.sortAndTake(Hough.improvedCandidates(acc, 200), 6);
+        assert candidates.size() <= 6;
+        Hough.drawLinesFromBestCandidates(this, candidates , sobel.width, phiStep, rStep, acc.radius);
+        Hough.drawIntersections(this, Hough.getIntersections(candidates));
         scrollbar.display();
         scrollbar.update();
+
+        System.out.println("ms/f: " + (System.currentTimeMillis() - time));
+
     }
 }

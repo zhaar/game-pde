@@ -3,6 +3,7 @@ package ImageProcessing;
 import java.util.List;
 import java.util.ArrayList;
 
+import ImageProcessing.Utils.Pair;
 import processing.core.PVector;
 
 public class QuadGraph {
@@ -11,7 +12,7 @@ public class QuadGraph {
     List<int[]> cycles = new ArrayList<int[]>();
     int[][] graph;
 
-    public void build(List<PVector> lines, int width, int height) {
+    public void build(List<Pair<Integer, Integer>> lines, int width, int height) {
         
         int n = lines.size();
         
@@ -23,10 +24,10 @@ public class QuadGraph {
         for (int i = 0; i < lines.size(); i++) {
             for (int j = i + 1; j < lines.size(); j++) {
                 if (intersect(lines.get(i), lines.get(j), width, height)) {
-                    List<PVector> intersections = Hough.getIntersections(lines);
-                    for (PVector pair: intersections) {
-                        graph[idx][0] = (int) pair.x;
-                        graph[idx][1] = (int) pair.y;
+                    List<Pair<Integer, Integer>> intersections = Hough.getIntersections(lines);
+                    for (Pair<Integer, Integer> pair: intersections) {
+                        graph[idx][0] = (int) pair.r;
+                        graph[idx][1] = (int) pair.phi;
                         idx++;
                     }
                     // TODO
@@ -43,14 +44,14 @@ public class QuadGraph {
     /** Returns true if polar lines 1 and 2 intersect 
      * inside an area of size (width, height)
      */
-    public static boolean intersect(PVector line1, PVector line2, int width, int height) {
+    public static boolean intersect(Pair<Integer, Integer> line1, Pair<Integer, Integer> line2, int width, int height) {
 
-        double sin_t1 = Math.sin(line1.y);
-        double sin_t2 = Math.sin(line2.y);
-        double cos_t1 = Math.cos(line1.y);
-        double cos_t2 = Math.cos(line2.y);
-        float r1 = line1.x;
-        float r2 = line2.x;
+        double sin_t1 = Math.sin(line1.phi);
+        double sin_t2 = Math.sin(line2.phi);
+        double cos_t1 = Math.cos(line1.phi);
+        double cos_t2 = Math.cos(line2.phi);
+        float r1 = line1.r;
+        float r2 = line2.r;
 
         double denom = cos_t2 * sin_t1 - cos_t1 * sin_t2;
 

@@ -16,7 +16,7 @@ public class Hough {
     private final float phiStep;
     private final float rStep;
 
-    public Hough(float phiStep, float rStep) {
+    public Hough(float rStep, float phiStep) {
         this.phiStep = phiStep;
         this.rStep = rStep;
     }
@@ -89,49 +89,28 @@ public class Hough {
         return vectors;
     }
 
-//    public static List<Pair<Integer, Integer>> getIntersections(List<Pair<Integer, Integer>> lines) {
-//        ArrayList<Pair<Integer, Integer>> intersections = new ArrayList<>();
-//
-//        for (int i = 0; i < lines.size() - 1; i++) {
-//            Pair<Integer, Integer> line1 = lines.get(i);
-//            for (int j = i + 1; j < lines.size(); j++) {
-//                Pair<Integer, Integer> line2 = lines.get(j);
-//                int r1 = line1.r();
-//                int r2 = line2.r();
-//                int phi1 = line1.phi();
-//                int phi2 = line2.phi();
-//                float d = cos(phi2) * sin(phi1) - cos(phi1) * sin(phi2);
-//                float x = r2 * sin(phi1) - r1 * sin(phi2);
-//                float y = -r2 * cos(phi1) + r1 * cos(phi2);
-//                intersections.add(new Pair<>(Math.round(x / d), Math.round(y / d)));
-//            }
-//        }
-//        return intersections;
-//    }
-
-    public static List<PVector> getIntersections(List<PVector> lines) {
-        ArrayList<PVector> intersections = new ArrayList<>();
+    public static List<Pair<Integer, Integer>> getIntersections(List<Pair<Integer, Integer>> lines) {
+        ArrayList<Pair<Integer, Integer>> intersections = new ArrayList<>();
 
         for (int i = 0; i < lines.size() - 1; i++) {
-            PVector line1 = lines.get(i);
+            Pair<Integer, Integer> line1 = lines.get(i);
             for (int j = i + 1; j < lines.size(); j++) {
-                PVector line2 = lines.get(j);
-                int r1 = (int) line1.x;
-                int r2 = (int) line2.x;
-                int phi1 = (int) line1.y;
-                int phi2 = (int) line2.y;
+                Pair<Integer, Integer> line2 = lines.get(j);
+                int r1 = line1.r;
+                int r2 = line2.r;
+                int phi1 = line1.phi;
+                int phi2 = line2.phi;
                 float d = cos(phi2) * sin(phi1) - cos(phi1) * sin(phi2);
                 float x = r2 * sin(phi1) - r1 * sin(phi2);
                 float y = -r2 * cos(phi1) + r1 * cos(phi2);
-                intersections.add(new PVector(Math.round(x / d), Math.round(y / d)));
+                intersections.add(new Pair<>(Math.round(x / d), Math.round(y / d)));
             }
         }
         return intersections;
     }
 
-
     public static List<Pair<Integer, Integer>> sortAndTake(List<Pair<Integer, Integer>> list, int count) {
-        Collections.sort(list, (o1, o2) -> (o2._2() > o2._2() || o1._2() == o2._2() && o1._1() < o2._1()) ? -1 : 1);
+        Collections.sort(list, (o1, o2) -> (o1._2 > o2._2 || o1._2 == o2._2 && o1._1 < o2._1) ? -1 : 1);
         return list.stream().limit(count).collect(Collectors.toList());
     }
 
@@ -146,7 +125,7 @@ public class Hough {
         for (int index = 0; index < acc.length; ++index) {
             arr.add(new Pair<>(index, acc[index]));
         }
-        return arr.stream().filter(p -> p._2() > minValue).collect(Collectors.toList());
+        return arr.stream().filter(p -> p._2 > minValue).collect(Collectors.toList());
     }
 
     public static List<Pair<Integer, Integer>> bestCandidates(ArrayData acc, int minValue) {
@@ -157,10 +136,10 @@ public class Hough {
     public static List<Pair<Integer,Integer>> improvedCandidates(ArrayData acc, int minVote) {
         int neighboorhood = 10;
         ArrayList<Pair<Integer, Integer>> candidates = new ArrayList<>();
-        for (int accR = 0; accR < acc.radius; accR++) {
-            for (int accPhi = 0; accPhi < acc.angle; accPhi++) {
+        for (int accR = 0; accR < acc.radius - 2; accR++) {
+            for (int accPhi = 0; accPhi < acc.angle - 2; accPhi++) {
 
-                int idx = (accPhi + 1) * acc.radius + accR + 1;
+                int idx = (accPhi + 1) * (acc.radius) + accR + 1;
 
                 if (acc.dataArray[idx] > minVote) {
                     boolean bestCandidate = true;
@@ -231,8 +210,7 @@ public class Hough {
 
     public static void drawLinesFromBestCandidates(PApplet ctx, List<Pair<Integer, Integer>> bestCandidates, int imgWidth, float phiStep, float rStep, int rDim) {
         bestCandidates.forEach(candidate -> {
-//            System.out.println("drawing candidate " + candidate );
-            int i = candidate._2();
+            int i = candidate._2;
             int accPhi = (i / (rDim + 2)) - 1;
             int accR = i - (accPhi + 1) * (rDim + 2) - 1;
             float r = (accR - (rDim - 1) * 0.5f) * rStep;
@@ -275,8 +253,9 @@ public class Hough {
 
     public static void drawIntersections(PApplet ctx, List<Pair<Integer, Integer>> intesections) {
         intesections.forEach(p -> {
+            System.out.println("drawing intersection at " + p);
             ctx.fill(255, 128, 0);
-            ctx.ellipse(p._1(), p._2(), 10, 10);
+            ctx.ellipse(p.r, p.phi, 10, 10);
         });
     }
 }
