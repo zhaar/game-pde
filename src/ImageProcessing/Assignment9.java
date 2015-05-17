@@ -1,6 +1,7 @@
 package ImageProcessing;
 
 import ImageProcessing.GenericProcess.FilterProcess;
+import UI.HScrollbar;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.video.Capture;
@@ -16,6 +17,7 @@ public class Assignment9 extends PApplet {
     Utils.ArrayData acc;
     Hough h;
     PImage img, originalImg;
+    HScrollbar scrollbar;
 
     public void setup() {
 
@@ -36,19 +38,17 @@ public class Assignment9 extends PApplet {
         size(1400, 400);
         originalImg = loadImage("board1.jpg");
         originalImg.resize(500, 400);
-        
+        scrollbar = new HScrollbar(this, 0, 400, 1400, 20);
         //noLoop();
     }
 
     private void transformImage() {
         long time = System.currentTimeMillis();
         img = originalImg;
-//        ThresholdFilter tFilter = new ThresholdFilter(this, ThresholdFilter.binaryThreshold(120), img);
-        img = FilterProcess.binaryThreshold(this, 120).immutableCompte(img);
+        img = FilterProcess.binaryThreshold(this, (int) (scrollbar.getPos() * 240)).immutableCompte(img);
         img = ImageConvolution.gauss(img, this);
         img = ImageConvolution.gauss(img, this);
-//        tFilter = new ThresholdFilter(this, ThresholdFilter.binaryThreshold(80), img);
-        img = FilterProcess.binaryThreshold(this, 80).immutableCompte(img);
+        img = FilterProcess.binaryThreshold(this, (int) (scrollbar.getPos() * 160)).immutableCompte(img);
         sobel = ImageConvolution.sobel(img, this);
 
         h = new Hough(phiStep, rStep);
@@ -70,9 +70,11 @@ public class Assignment9 extends PApplet {
         transformImage();
         image(img, 0, 0);
         image(sobel, img.width, 0);
-        image(hough, img.width+sobel.width, 0);
+        image(hough, img.width + sobel.width, 0);
         Hough.drawLinesFromAccumulator(this, acc, sobel.width, phiStep, rStep);
         Hough.drawLinesFromBestCandidates(this, Hough.sortAndTake(Hough.bestCandidates(acc, 200), 1000), sobel.width, phiStep, rStep, acc.radius);
 
+        scrollbar.display();
+        scrollbar.update();
     }
 }

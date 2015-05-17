@@ -231,7 +231,7 @@ public class Hough {
 
     public static void drawLinesFromBestCandidates(PApplet ctx, List<Pair<Integer, Integer>> bestCandidates, int imgWidth, float phiStep, float rStep, int rDim) {
         bestCandidates.forEach(candidate -> {
-            System.out.println("drawing candidate " + candidate );
+//            System.out.println("drawing candidate " + candidate );
             int i = candidate._2();
             int accPhi = (i / (rDim + 2)) - 1;
             int accR = i - (accPhi + 1) * (rDim + 2) - 1;
