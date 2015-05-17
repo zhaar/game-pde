@@ -35,30 +35,29 @@ public class Utils {
 
     public static class ArrayData {
         public final int[] dataArray;
-        public final int width;
-        public final int height;
+        public final int radius;
+        public final int angle;
 
-        public ArrayData(int width, int height) {
-            this(new int[width * height], width, height);
+        public ArrayData(int radius, int angle) {
+            this(new int[radius * angle], radius, angle);
         }
 
-        public ArrayData(int[] dataArray, int width, int height) {
+        private ArrayData(int[] dataArray, int radius, int angle) {
             this.dataArray = dataArray;
-            this.width = width;
-            this.height = height;
+            this.radius = radius;
+            this.angle = angle;
         }
 
         public int get(int x, int y) {
-            return dataArray[y * width + x];
+            return dataArray[x * radius + y];
         }
 
         public void set(int x, int y, int value) {
-            dataArray[y * width + x] = value;
+            dataArray[x * radius + y] = value;
         }
 
         public void accumulate(int x, int y, int delta) {
             set(x, y, get(x, y) + delta);
         }
-
     }
 }

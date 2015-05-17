@@ -5,10 +5,8 @@ import processing.core.PImage;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static ImageProcessing.Utils.*;
-import static ImageProcessing.Utils.goesThrough;
 import static processing.core.PApplet.*;
 
 public class Hough {
@@ -28,7 +26,7 @@ public class Hough {
         int phiMax = phiDim();
         int rMax = rDim(source);
 
-        ArrayData acc = new ArrayData(phiMax + 2, rMax + 2);
+        ArrayData acc = new ArrayData(rMax + 2, phiMax + 2);
 
         float[] sinTable = new float[phiMax];
         float[] cosTable = new float[phiMax];
@@ -42,7 +40,7 @@ public class Hough {
                 if (ctx.brightness(source.pixels[y * source.width + x]) != 0) {
                     for (int angle = 0; angle < phiMax; ++angle) {
                         float r = x * cosTable[angle] + y * sinTable[angle];
-                        int normalized = Math.round((r + acc.height) / 2);
+                        int normalized = Math.round((r + acc.radius) / 2);
                         acc.accumulate(angle, normalized, 1);
                     }
                 }
@@ -52,13 +50,13 @@ public class Hough {
     }
 
     public int[] computeAccumulator2(PApplet ctx, PImage source) {
-        int width = source.width;
+        int radius = source.width;
         int height = source.height;
         int phiMax = phiDim();
         int rMax = rDim(source);
 
         int[] accumulator = new int[(phiMax + 2) * (rMax + 2)];
-        int[] sorted = new int[accumulator.length];
+
         float[] sinTable = new float[phiMax];
         float[] cosTable = new float[phiMax];
         for(int angle = 0; angle < phiMax; ++angle) {
@@ -67,7 +65,7 @@ public class Hough {
         }
 
         for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+            for (int x = 0; x < radius; x++) {
                 if (ctx.brightness(source.pixels[y * source.width + x]) != 0) {
                     for (int angle = 0; angle < phiMax; ++angle) {
                         float r = x * cosTable[angle] + y * sinTable[angle];
@@ -80,6 +78,13 @@ public class Hough {
         return accumulator;
     }
 
+    /**
+     * Returns a list of pairs of a given length corresponding to the best candidates in the accumulator
+     * @param acc the line accumulator
+     * @param minValue minimum values the candidates must conform to
+     * @param count number of candidates
+     * @return a list of the few best candidates as pairs of index in accumulator and value
+     */
     public static List<Pair<Integer, Integer>> bestCandidates(int[] acc, int minValue, int count) {
         ArrayList<Pair<Integer, Integer>> arr = new ArrayList<>(acc.length);
         for (int index = 0; index < acc.length; ++index) {
@@ -88,6 +93,11 @@ public class Hough {
         Collections.sort(arr, (o1, o2) -> (o2._2() > o2._2() || o1._2() == o2._2() && o1._1() < o2._1()) ? -1 : 1);
         return arr.stream().filter(p -> p._2() > minValue).limit(count).collect(Collectors.toList());
     }
+
+//    public static List<Integer> improvedCandidates(int[] acc, int minVote) {
+//        int neighboorhood = 10;
+//        for (int accR = 0; accR < rDim)
+//    }
 
     public int phiDim() {
         return (int) (Math.PI / phiStep);
@@ -108,12 +118,16 @@ public class Hough {
     }
 
     public static PImage drawAccumulator(PApplet ctx, ArrayData acc) {
-        PImage houghImg = ctx.createImage(acc.width, acc.height, ALPHA);
-        for (int i = 0; i < acc.dataArray.length; i++) {
-            houghImg.pixels[i] = ctx.color(min(255, acc.dataArray[i]));
-        }
-        houghImg.updatePixels();
-        return houghImg;
+//        PImage houghImg = ctx.createImage(acc.radius, acc.height, ALPHA);
+//        for (int i = 0; i < acc.dataArray.length; i++) {
+//            houghImg.pixels[i] = ctx.color(min(255, acc.dataArray[i]));
+//        }
+//        houghImg.updatePixels();
+        return drawAccumulator(ctx, acc.dataArray, acc.radius - 2, acc.angle - 2);
+    }
+
+    public static void drawLinesFromAccumulator(PApplet ctx, ArrayData arr, int imgWidth, float phiStep, float rStep) {
+        drawLinesFromAccumulator(ctx, arr.dataArray, imgWidth, phiStep, rStep, arr.radius);
     }
 
     public static void drawLinesFromAccumulator(PApplet ctx, int[] acc, int imgWidth, float phiStep, float rStep, int rDim) {
