@@ -23,7 +23,7 @@ public class QuadGraph {
         for (int i = 0; i < lines.size(); i++) {
             for (int j = i + 1; j < lines.size(); j++) {
                 if (intersect(lines.get(i), lines.get(j), width, height)) {
-                    
+
                     // TODO
                     // fill the graph using intersect() to check if two lines are
                     // connected in the graph.
@@ -52,11 +52,7 @@ public class QuadGraph {
         int x = (int) ((r2 * sin_t1 - r1 * sin_t2) / denom);
         int y = (int) ((-r2 * cos_t1 + r1 * cos_t2) / denom);
 
-        if (0 <= x && 0 <= y && width >= x && height >= y)
-            return true;
-        else
-            return false;
-
+        return (0 <= x && x < width) && (0 <= y && y < height);
     }
     
     List<int[]> findCycles() {
