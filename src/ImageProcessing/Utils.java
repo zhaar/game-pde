@@ -16,6 +16,8 @@ public class Utils {
 
         public T _1() { return t; }
         public S _2() { return s; }
+        public T r() { return t; }
+        public S phi() { return s; }
 
         @Override
         public String toString() {
