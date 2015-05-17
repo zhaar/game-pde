@@ -5,7 +5,7 @@ import processing.core.PImage;
 
 import static processing.core.PConstants.*;
 
-public class GenericImageProcess {
+public class GenericImageProcess implements GenericProcess {
 
     private final PApplet ctx;
     private final PixelFunction fn;
@@ -26,7 +26,7 @@ public class GenericImageProcess {
         return target;
     }
 
-    public PImage immutableCompte(PImage source) {
+    public PImage immutableCompute(PImage source) {
         return mutableCompute(source, ctx.createImage(source.width, source.height, RGB));
     }
 

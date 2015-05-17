@@ -38,17 +38,17 @@ public class Assignment9 extends PApplet {
         size(1400, 400);
         originalImg = loadImage("board1.jpg");
         originalImg.resize(500, 400);
-        scrollbar = new HScrollbar(this, 0, 400, 1400, 20);
+        scrollbar = new HScrollbar(this, 0, 380, 1400, 20);
         //noLoop();
     }
 
     private void transformImage() {
         long time = System.currentTimeMillis();
         img = originalImg;
-        img = FilterProcess.binaryThreshold(this, (int) (scrollbar.getPos() * 240)).immutableCompte(img);
+        img = FilterProcess.binaryThreshold(this, (int) (scrollbar.getPos() * 240)).immutableCompute(img);
         img = ImageConvolution.gauss(img, this);
         img = ImageConvolution.gauss(img, this);
-        img = FilterProcess.binaryThreshold(this, (int) (scrollbar.getPos() * 160)).immutableCompte(img);
+        img = FilterProcess.binaryThreshold(this, (int) (scrollbar.getPos() * 160)).immutableCompute(img);
         sobel = ImageConvolution.sobel(img, this);
 
         h = new Hough(phiStep, rStep);
