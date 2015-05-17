@@ -63,9 +63,9 @@ public class QuadGraph {
     List<int[]> findCycles() {
 
         cycles.clear();
-        for (int i = 0; i < graph.length; i++) {
-            for (int j = 0; j < graph[i].length; j++) {
-                findNewCycles(new int[] {graph[i][j]});
+        for (int[] aGraph : graph) {
+            for (int j = 0; j < aGraph.length; j++) {
+                findNewCycles(new int[]{aGraph[j]});
             }
         }
         for (int[] cy : cycles) {
@@ -78,37 +78,34 @@ public class QuadGraph {
         return cycles;
     }
 
-    void findNewCycles(int[] path)
-    {
-            int n = path[0];
-            int x;
-            int[] sub = new int[path.length + 1];
+    void findNewCycles(int[] path) {
+        int n = path[0];
+        int x;
+        int[] sub = new int[path.length + 1];
 
-            for (int i = 0; i < graph.length; i++)
-                for (int y = 0; y <= 1; y++)
-                    if (graph[i][y] == n)
-                    //  edge refers to our current node
+        for (int[] aGraph : graph)
+            for (int y = 0; y <= 1; y++)
+                if (aGraph[y] == n)
+                //  edge refers to our current node
+                {
+                    x = aGraph[(y + 1) % 2];
+                    if (!visited(x, path))
+                    //  neighbor node not on path yet
                     {
-                        x = graph[i][(y + 1) % 2];
-                        if (!visited(x, path))
-                        //  neighbor node not on path yet
-                        {
-                            sub[0] = x;
-                            System.arraycopy(path, 0, sub, 1, path.length);
-                            //  explore extended path
-                            findNewCycles(sub);
-                        }
-                        else if ((path.length > 2) && (x == path[path.length - 1]))
-                        //  cycle found
-                        {
-                            int[] p = normalize(path);
-                            int[] inv = invert(p);
-                            if (isNew(p) && isNew(inv))
-                            {
-                                cycles.add(p);
-                            }
+                        sub[0] = x;
+                        System.arraycopy(path, 0, sub, 1, path.length);
+                        //  explore extended path
+                        findNewCycles(sub);
+                    } else if ((path.length > 2) && (x == path[path.length - 1]))
+                    //  cycle found
+                    {
+                        int[] p = normalize(path);
+                        int[] inv = invert(p);
+                        if (isNew(p) && isNew(inv)) {
+                            cycles.add(p);
                         }
                     }
+                }
     }
 
     //  check of both arrays have same lengths and contents
