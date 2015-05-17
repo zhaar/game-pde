@@ -2,6 +2,7 @@ package ImageProcessing;
 
 import processing.core.PApplet;
 import processing.core.PImage;
+import processing.core.PVector;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -78,6 +79,16 @@ public class Hough {
         return accumulator;
     }
 
+    public static List<Pair<Integer, Integer>> dataAsPairs(ArrayData arr) {
+        ArrayList<Pair<Integer, Integer>> vectors = new ArrayList<>(arr.dataArray.length);
+        for (int radius = 0; radius < arr.radius; ++radius) {
+            for (int angle = 0; angle < arr.angle; ++angle) {
+                vectors.add(new Pair<>(radius, angle));
+            }
+        }
+        return vectors;
+    }
+
     public static List<Pair<Integer, Integer>> getIntersections(List<Pair<Integer, Integer>> lines) {
         ArrayList<Pair<Integer, Integer>> intersections = new ArrayList<>();
 
@@ -85,10 +96,10 @@ public class Hough {
             Pair<Integer, Integer> line1 = lines.get(i);
             for (int j = i + 1; j < lines.size(); j++) {
                 Pair<Integer, Integer> line2 = lines.get(j);
-                int r1 = line1._1();
-                int r2 = line2._1();
-                int phi1 = line1._2();
-                int phi2 = line2._2();
+                int r1 = line1.r();
+                int r2 = line2.r();
+                int phi1 = line1.phi();
+                int phi2 = line2.phi();
                 float d = cos(phi2) * sin(phi1) - cos(phi1) * sin(phi2);
                 float x = r2 * sin(phi1) - r1 * sin(phi2);
                 float y = -r2 * cos(phi1) + r1 * cos(phi2);
