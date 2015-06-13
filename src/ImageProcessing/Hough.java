@@ -28,7 +28,7 @@ public class Hough {
     }
 
     public int rDim(PImage img) {
-        return (int) (((img.width + img.height) * 2 + 1) / rStep);
+        return (int)Math.ceil(Math.hypot(img.width, img.height));
     }
 
     /**
@@ -45,7 +45,7 @@ public class Hough {
         int phiMax = phiDim();
         int rMax = rDim(source);
 
-        ArrayData acc = new ArrayData(rMax + 2, phiMax + 2);
+        ArrayData acc = new ArrayData(rMax, phiMax);
 
         float[] sinTable = new float[phiMax];
         float[] cosTable = new float[phiMax];
@@ -59,7 +59,7 @@ public class Hough {
                 if (ctx.brightness(source.pixels[y * source.width + x]) != 0) {
                     for (int angle = 0; angle < phiMax; ++angle) {
                         float r = x * cosTable[angle] + y * sinTable[angle];
-                        int normalized = Math.round((r + acc.radius) / 2);
+                        int normalized = Math.round((r/2 + acc.radius/2));
                         acc.accumulate(normalized, angle, 1);
                     }
                 }
@@ -68,11 +68,31 @@ public class Hough {
         return acc;
     }
 
-    public static List<Pair<Integer, Integer>> dataAsPairs(ArrayData arr) {
-        ArrayList<Pair<Integer, Integer>> vectors = new ArrayList<>(arr.dataArray.length);
+    /**
+     * Converts a dataArray as a list of Pairs of type (radius, angle)
+     * @param arr
+     * @return
+     */
+    public static List<Pair<Float, Float>> dataAsPairs(ArrayData arr) {
+        ArrayList<Pair<Float, Float>> vectors = new ArrayList<>(arr.dataArray.length);
         for (int radius = 0; radius < arr.radius; ++radius) {
             for (int angle = 0; angle < arr.angle; ++angle) {
-                vectors.add(new Pair<>(radius - arr.radius/2, angle));
+                vectors.add(new Pair<Float, Float>(radius - arr.radius/2f, PI/angle));
+            }
+        }
+        return vectors;
+    }
+
+    /**
+     * returns a list of vectors of form (radius, angle, votes)
+     * @param arr data from hough accumulator
+     * @return list of vectors for each line in the accumulator
+     */
+    public static List<PVector> dataAsVector(ArrayData arr) {
+        ArrayList<PVector> vectors = new ArrayList<>(arr.dataArray.length);
+        for (int radius = 0; radius < arr.radius; ++radius) {
+            for (int angle = 0; angle < arr.angle; ++angle) {
+                vectors.add(new PVector(angle/arr.angle * PI, 2*radius - arr.radius, arr.get(radius, angle)));
             }
         }
         return vectors;
@@ -128,22 +148,13 @@ public class Hough {
 
     /**
      * Returns a list of pairs of a given length corresponding to the best candidates in the accumulator
-     * @param acc the line accumulator
+     * @param lines the lines form the accumulator along with their vote count
      * @param minValue minimum values the candidates must conform to
      * @return a list of the best candidates as pairs of (accumulatorIndex, votes)
      */
-    public static List<Pair<Integer, Integer>> bestCandidates(int[] acc, int minValue) {
-        ArrayList<Pair<Integer, Integer>> arr = new ArrayList<>(acc.length);
-        for (int index = 0; index < acc.length; ++index) {
-            arr.add(new Pair<>(index, acc[index]));
-        }
-        return arr.stream().filter(p -> p._2 > minValue).collect(Collectors.toList());
+    public static List<PVector> bestCandidates(List<PVector> lines, int minValue) {
+        return lines.stream().filter(p -> p.z > minValue).collect(Collectors.toList());
     }
-
-    public static List<Pair<Integer, Integer>> bestCandidates(ArrayData acc, int minValue) {
-        return bestCandidates(acc.dataArray, minValue);
-    }
-
 
     /**
      * Improved version for picking best candidates, uses cluster approximation to detect nearby lines.
@@ -239,7 +250,7 @@ public class Hough {
     }
 
 
-    public static void drawLinePolar(PApplet ctx, float r, float phi, int imgWidth) {
+    private static void drawLinePolar(PApplet ctx, float r, float phi, int imgWidth) {
         int x0 = 0;
         int y0 = (int) (r / sin(phi));
         int x1 = (int) (r / cos(phi));
@@ -274,7 +285,7 @@ public class Hough {
         intesections.forEach(p -> {
             System.out.println("drawing intersection at " + p);
             ctx.fill(255, 128, 0);
-            ctx.ellipse(p.r, p.phi, 10, 10);
+            ctx.ellipse(p._1, p._2, 10, 10);
         });
     }
 }

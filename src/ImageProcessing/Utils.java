@@ -24,6 +24,23 @@ public class Utils {
         }
     }
 
+    public static class Triple<T, S, R> {
+        public final T _1;
+        public final S _2;
+        public final R _3;
+
+        public Triple(T t, S s, R r) {
+            this._1 = t;
+            this._2 = s;
+            this._3 = r;
+        }
+
+        @Override
+        public String toString() {
+            return "(" + _1.toString() + ", " + _2.toString() + ", " + _3.toString() + ")";
+        }
+    }
+
     public static boolean goesThrough(int x, int y, int r, int phi) {
         return r == x * Math.cos(phi) + y * Math.sin(phi);
     }
@@ -43,6 +60,12 @@ public class Utils {
             this.angle = angle;
         }
 
+        /**
+         * Radius, and then angle
+         * @param r radius
+         * @param phi angle
+         * @return value at (r,phi)
+         */
         public int get(int r, int phi) {
             return dataArray[phi * radius + r];
         }

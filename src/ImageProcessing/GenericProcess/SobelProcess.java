@@ -21,5 +21,4 @@ public class SobelProcess extends GenericImageProcess{
         super(context, pixelFunction);
     }
 
-
 }

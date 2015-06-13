@@ -1,37 +1,19 @@
 package ImageProcessing.GenericProcess;
 
 import processing.core.PApplet;
+import processing.core.PConstants;
 import processing.core.PImage;
+
+import java.util.ArrayList;
 
 import static processing.core.PConstants.*;
 
-public class GenericImageProcess implements GenericProcess {
+public class GenericImageProcess extends ProcessFromImage<PImage> {
 
-    private final PApplet ctx;
-    private final PixelFunction fn;
+//    protected final PApplet ctx;
+//    private final PixelFunction fn;
 
-    public GenericImageProcess(PApplet context, PixelFunction pixelFunction) {
-        this.ctx = context;
-        this.fn = pixelFunction;
-    }
-
-    public PImage mutableCompute(PImage source, PImage target) {
-        source.loadPixels();
-        int size = source.width * source.height;
-        for (int i = 0; i < size; i++) {
-            int pixel = source.pixels[i];
-            target.pixels[i] = ctx.color(fn.computePixel(pixel, source, i));
-        }
-        target.updatePixels();
-        return target;
-    }
-
-    public PImage immutableCompute(PImage source) {
-        return mutableCompute(source, ctx.createImage(source.width, source.height, RGB));
-    }
-
-    @FunctionalInterface
-    public interface PixelFunction {
-        Integer computePixel(Integer pixel, PImage source, int index);
+    public GenericImageProcess(final PApplet context, PixelFunction pixelFunction) {
+        super(context, pixelFunction, arg -> context.createImage(arg.width, arg.height, context.RGB), (acc, value, index) -> acc.pixels[index] = value);
     }
 }
