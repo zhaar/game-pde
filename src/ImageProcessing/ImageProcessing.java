@@ -5,6 +5,7 @@ import UI.HScrollbar;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.video.Capture;
+import processing.video.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +15,8 @@ public class ImageProcessing extends PApplet {
     private static final float phiStep = 0.06f;
     private static final float rStep = 2.5f;
 
-    Capture cam;
+    Movie cam;
+//    Capture cam;
     PImage hough;
     PImage sobel;
     Utils.ArrayData acc;
@@ -26,20 +28,23 @@ public class ImageProcessing extends PApplet {
 
     public void setup() {
 
-//        String[] cameras = Capture.list();
-//        if (cameras.length == 0) {
-//            println("There are no cameras available for capture.");
-//            exit(); } else {
-//            int goodCam = 0;
-//            println("Available cameras:");
-//            for (int i = 0; i < cameras.length; i++) {
-//                println(cameras[i]);
-//                if (cameras[i].contains("640x"))
-//                    goodCam = i;
-//            }
+        String[] cameras = Capture.list();
+        if (cameras.length == 0) {
+            println("There are no cameras available for capture.");
+            exit(); } else {
+            int goodCam = 0;
+            println("Available cameras:");
+            for (int i = 0; i < cameras.length; i++) {
+                println(cameras[i]);
+                if (cameras[i].contains("640x"))
+                    goodCam = i;
+            }
 //            cam = new Capture(this, cameras[goodCam]);
 //            cam.start();
-//        }
+            
+            cam = new Movie(this, "Game\\data\\testvideo.mp4");
+            cam.loop();
+        }
         size(1400, 400);
         originalImg = loadImage("board1.jpg");
         originalImg.resize(500, 400);
@@ -64,10 +69,10 @@ public class ImageProcessing extends PApplet {
     public void draw() {
         long time = System.currentTimeMillis();
 
-//        if (cam.available() == true) {
-//            cam.read();
-//        }
-//        img = cam.get();
+        if (cam.available() == true) {
+            cam.read();
+        }
+        originalImg = cam.get();
 //        pushMatrix();
 //        scale(-1.0f, 1.0f);
 //        image(ImageConvolution.sobel(img, this),-img.radius,0);
@@ -83,7 +88,7 @@ public class ImageProcessing extends PApplet {
         scrollbar.display();
         scrollbar.update();
 
-        System.out.println("ms/f: " + (System.currentTimeMillis() - time));
+//        System.out.println("ms/f: " + (System.currentTimeMillis() - time));
 
     }
 }

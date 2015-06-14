@@ -169,7 +169,8 @@ public class Hough {
                             if (accR + dR < 0 || accR + dR >= acc.radius) {
                                 continue;
                             }
-                            int neighbourIdx = (accPhi + dPhi + 1) * (acc.radius + 2) + accR + dR + 1;
+                            int neighbourIdx = (accPhi + dPhi) * (acc.radius + 2) + accR + dR + 1;
+//                            System.out.println(acc.dataArray.length + " ; " + idx + " ; " + neighbourIdx);
                             if (acc.dataArray[idx] < acc.dataArray[neighbourIdx]) {
                                 bestCandidate = false;
                                 break;
@@ -178,7 +179,7 @@ public class Hough {
                         if (!bestCandidate) {
                             break;
                         }
-                    }
+                    } 
                     if (bestCandidate) {
                         candidates.add(new Pair<>(idx, acc.dataArray[idx]));
                     }
